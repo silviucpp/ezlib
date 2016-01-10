@@ -1,6 +1,6 @@
 # ezlib
 
-*An zlib NIF library optimised for streaming. 
+*An zlib NIF library for Erlang optimised for streaming. Around 50% - 60% faster than erlang zlib driver * 
 
 ### Getting starting:
 
@@ -36,14 +36,14 @@ Options = [
 
 zlib memory footprint which can be calculated as:
 
-- deflate memory usage `(bytes) = (1 << (windowBits+2)) + (1 << (memLevel+9))` 
-- inflate memory usage `(bytes) = (1 << windowBits) + 1440*2*sizeof(int)` 
+- deflate memory usage in bytes = (1 << (`window_bits`+2)) + (1 << (`memory_level`+9)) 
+- inflate memory usage in bytes = (1 << `window_bits`) + 1440*2*sizeof(int) 
 
-The default values for `windowBits` and `memLevel` are 15 and 8 so for this values the default required memory for deflate is 256 KB and for inflate is 44 KB
+The default values for `window_bits` and `memory_level` are 15 and 8 so for this values the default required memory for deflate is 256 KB and for inflate is 44 KB.
 
 In addition to this memory ezlib allocates a 1 KB buffer used to avoid reallocation of memory all the time. This buffer is auto resizeable and cannot grow over 16 KB.
 
-### Benchmarks (using the benchmakr.erl from testing folder)
+### Benchmarks (using the benchmark.erl from testing folder)
 
 `benchmark:run(erlang, 1000000, 1, 8, 2).`
 
@@ -53,5 +53,5 @@ Time to complete: 2451.745 ms  407872.76001378614 per second
  
 Time to complete: 1537.777 ms  650289.3462446115 per second 
 
-So ezlib it's with around 59 % faster than erlang implementation on the lowest compression method. Even if you chnage the compression methods
+So ezlib it's with around 59 % faster than erlang implementation on the lowest compression method. Even if you change the compression methods
 the results are almost the same because the zlib overhead is the same for both libs.
