@@ -28,7 +28,7 @@ struct zlib_session
 {
     ByteBuffer* buffer;
     z_stream*  stream;
-    int method;
+    unsigned char method;
     PROCESSING_FUNCTION processing_function;
 #if defined(USE_STATS)
     size_t stat_raw_bytes;
