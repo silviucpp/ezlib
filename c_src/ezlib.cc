@@ -61,8 +61,6 @@ z_stream* create_stream()
     return stream;
 }
 
-ZEXTERN int ZEXPORT deflate OF((z_streamp strm, int flush));
-
 bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
 {
 #if defined(USE_STATS)
