@@ -17,7 +17,7 @@
 
 #define DEFLATE 1
 #define INFLATE 2
-#define CHUNK_SIZE 2048
+#define CHUNK_SIZE 1024
 
 #define DEFAULT_BUFFER_CAPACITY 1024
 #define MAX_BUFFER_CAPACITY 16000
@@ -99,7 +99,7 @@ bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
         session->stream->avail_out = CHUNK_SIZE;
         session->stream->next_out =  chunk;
         
-        result = session->processing_function(session->stream, Z_NO_FLUSH);
+        result = session->processing_function(session->stream, Z_SYNC_FLUSH);
         
         if (result != Z_OK)
             return false;
@@ -115,32 +115,6 @@ bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
         }
     }
     while (session->stream->avail_out == 0);
-    
-    if(session->method == DEFLATE)
-    {
-        //Flush data
-        
-        do
-        {
-            session->stream->avail_out = CHUNK_SIZE;
-            session->stream->next_out = chunk;
-            result = session->processing_function(session->stream, Z_SYNC_FLUSH);
-            
-            if (result != Z_OK)
-                return false;
-            
-            bytes_to_write = CHUNK_SIZE - session->stream->avail_out;
-            
-            if(bytes_to_write > 0)
-            {
-#if defined(USE_STATS)
-                session->stat_processed_bytes += bytes_to_write;
-#endif
-                session->buffer->WriteBytes(reinterpret_cast<const char*>(chunk), bytes_to_write);
-            }
-        }
-        while (session->stream->avail_out == 0);
-    }
     
     return true;
 }
