@@ -22,16 +22,6 @@
 #define DEFAULT_BUFFER_CAPACITY 1024
 #define MAX_BUFFER_CAPACITY 16000
 
-#if defined(USE_STATS)
-struct CompressionStat
-{
-    CompressionStat() : raw_bytes(0), processed_bytes(0) {}
-    
-    size_t raw_bytes;
-    size_t processed_bytes;
-};
-#endif
-
 typedef int (*PROCESSING_FUNCTION)(z_stream* strm, int flush);
 
 struct zlib_session
@@ -41,7 +31,8 @@ struct zlib_session
     int method;
     PROCESSING_FUNCTION processing_function;
 #if defined(USE_STATS)
-    CompressionStat* stats;
+    size_t stat_raw_bytes;
+    size_t stat_processed_bytes;
 #endif
 };
 
@@ -75,7 +66,7 @@ ZEXTERN int ZEXPORT deflate OF((z_streamp strm, int flush));
 bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
 {
 #if defined(USE_STATS)
-    session->stats->raw_bytes += len;
+    session->stat_raw_bytes += len;
 #endif
 
     int result;
@@ -100,7 +91,7 @@ bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
         if(bytes_to_write > 0)
         {
 #if defined(USE_STATS)
-            session->stats->processed_bytes += bytes_to_write;
+            session->stat_processed_bytes += bytes_to_write;
 #endif
             session->buffer->WriteBytes(reinterpret_cast<const char*>(chunk), bytes_to_write);
         }
@@ -125,7 +116,7 @@ bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
             if(bytes_to_write > 0)
             {
 #if defined(USE_STATS)
-                session->stats->processed_bytes += bytes_to_write;
+                session->stat_processed_bytes += bytes_to_write;
 #endif
                 session->buffer->WriteBytes(reinterpret_cast<const char*>(chunk), bytes_to_write);
             }
@@ -154,12 +145,6 @@ void nif_zlib_session_free(ErlNifEnv* env, void* obj)
     
     if(session->buffer)
         delete session->buffer;
-    
-#if defined(USE_STATS)
-    if(session->stats)
-        delete session->stats;
-#endif
-    
 }
 
 ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
@@ -273,10 +258,9 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
         return make_error(env, "enif_alloc_resource failed");
     }
     
+    memset(session, 0, sizeof(zlib_session));
+    
     session->buffer = new ByteBuffer(DEFAULT_BUFFER_CAPACITY);
-#if defined(USE_STATS)
-    session->stats = new CompressionStat();
-#endif
     session->method = method;
     session->stream = stream;
     session->processing_function = (method == DEFLATE ? deflate : inflate);
@@ -335,17 +319,16 @@ ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
         return enif_make_badarg(env);
     
 #if defined(USE_STATS)
-    CompressionStat stat = *session->stats;
     double ratio;
     
     if(session->method == DEFLATE)
-        ratio = (1.0f- ((double)stat.processed_bytes/(double)stat.raw_bytes))*100;
+        ratio = (1.0f- (static_cast<double>(session->stat_processed_bytes)/static_cast<double>(session->stat_raw_bytes)))*100;
     else
-        ratio = (1.0f- ((double)stat.raw_bytes/(double)stat.processed_bytes))*100;
+        ratio = (1.0f- (static_cast<double>(session->stat_raw_bytes)/static_cast<double>(session->stat_processed_bytes)))*100;
        
-    ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC("raw_bytes", session->stats->raw_bytes),
-                                                 UINT64_METRIC("processed_bytes", session->stats->processed_bytes),
-                                                 DOUBLE_METRIC("ratio", ratio));
+    ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC("raw_bytes", session->stat_raw_bytes),
+                                                 UINT64_METRIC("processed_bytes", session->stat_processed_bytes),
+                                                 DOUBLE_METRIC("processed_ratio", ratio));
     
     return enif_make_tuple2(env, ATOMS.atomOk, stats);
 #else
