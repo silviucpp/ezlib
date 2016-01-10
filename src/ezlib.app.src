@@ -1,0 +1,12 @@
+{application, ezlib,
+ [
+  {description, ""},
+  {vsn, "1.0"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { ezlib_app, []}},
+  {env, []}
+ ]}.

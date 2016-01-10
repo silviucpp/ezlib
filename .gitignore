@@ -1,0 +1,7 @@
+/.idea/
+/.rebar/
+/ebin/
+/ezlib_nif.xcodeproj/
+/priv/
+*.DS_Store
+*.iml
