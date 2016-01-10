@@ -1,6 +1,6 @@
 # ezlib
 
-*An zlib NIF library for Erlang optimised for streaming. Around 50% - 60% faster than erlang zlib driver * 
+*An zlib NIF library for Erlang optimised for streaming. Around 50% - 60% faster than erlang zlib driver* 
 
 ### Getting starting:
 
