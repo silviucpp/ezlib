@@ -7,8 +7,10 @@
 
 -export([
     new_session/1,
+    new_session/2,
     process_buffer/3,
-    read_data/1
+    read_data/1,
+    get_stats/1
 ]).
 
 %% nif functions
@@ -37,8 +39,14 @@ not_loaded(Line) ->
 new_session(_Method) ->
     ?NOT_LOADED.
 
+new_session(_Method, _Opt) ->
+    ?NOT_LOADED.
+
 process_buffer(_SessionRef, _Buffer, _ReturnData) ->
     ?NOT_LOADED.
 
 read_data(_SessionRef) ->
+    ?NOT_LOADED.
+
+get_stats(_SessionRef) ->
     ?NOT_LOADED.

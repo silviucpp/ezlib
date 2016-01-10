@@ -7,6 +7,10 @@ const char kAtomOk[] = "ok";
 const char kAtomError[] = "error";
 const char kAtomTrue[] = "true";
 const char kAtomFalse[] = "false";
+const char kAtomCompressionLevel[] = "compression_level";
+const char kAtomWindowBits[] = "window_bits";
+const char kAtomMemLevel[] = "memory_level";
+const char kAtomCompStrategy[] = "compression_strategy";
 
 atoms ATOMS;
 
@@ -25,6 +29,11 @@ int on_nif_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
     ATOMS.atomTrue = make_atom(env, kAtomTrue);
     ATOMS.atomFalse = make_atom(env, kAtomFalse);
     
+    ATOMS.atomCompressionLevel = make_atom(env, kAtomCompressionLevel);
+    ATOMS.atomWindowBits = make_atom(env, kAtomWindowBits);
+    ATOMS.atomMemLevel = make_atom(env, kAtomMemLevel);
+    ATOMS.atomCompStrategy = make_atom(env, kAtomCompStrategy);
+
     ezlib_data* data = static_cast<ezlib_data*>(enif_alloc(sizeof(ezlib_data)));
     open_resources(env, data);
     
@@ -54,9 +63,11 @@ int on_nif_upgrade(ErlNifEnv* env, void** priv, void** old_priv, ERL_NIF_TERM in
 
 static ErlNifFunc nif_funcs[] =
 {    
+    {"new_session", 2, nif_zlib_new_session},
     {"new_session", 1, nif_zlib_new_session},
     {"process_buffer", 3, nif_zlib_process_buffer},
     {"read_data", 1, nif_zlib_read_data},
+    {"get_stats", 1, nif_get_stats},
 };
 
 ERL_NIF_INIT(ezlib_nif, nif_funcs, on_nif_load, NULL, on_nif_upgrade, on_nif_unload)

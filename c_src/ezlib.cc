@@ -10,6 +10,11 @@
 
 #define USE_STATS
 
+#if defined(USE_STATS)
+    #define UINT64_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_uint64(env, Property))
+    #define DOUBLE_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_double(env, Property))
+#endif
+
 #define DEFLATE 1
 #define INFLATE 2
 #define CHUNK_SIZE 2048
@@ -159,8 +164,6 @@ void nif_zlib_session_free(ErlNifEnv* env, void* obj)
 
 ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-    UNUSED(argc);
-    
     ezlib_data* data = static_cast<ezlib_data*>(enif_priv_data(env));
     
     int method;
@@ -171,6 +174,70 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     if(method != DEFLATE && method != INFLATE)
         return enif_make_badarg(env);
 
+    int compression_level = Z_DEFAULT_COMPRESSION;
+    int window_bits = 15;
+    int mem_level = 8;
+    int compression_strategy = Z_DEFAULT_STRATEGY;
+    
+    if(argc == 2)
+    {
+        if(!enif_is_list(env, argv[1]))
+            return enif_make_badarg(env);
+    
+        const ERL_NIF_TERM *items;
+        int arity;
+        
+        ERL_NIF_TERM settings_list = argv[1];
+        ERL_NIF_TERM head;
+    
+        while(enif_get_list_cell(env, settings_list, &head, &settings_list))
+        {
+            if(!enif_get_tuple(env, head, &arity, &items) || arity != 2)
+                return enif_make_badarg(env);
+            
+            if(enif_is_identical(items[0], ATOMS.atomCompressionLevel))
+            {
+                int value;
+                
+                if(!enif_get_int(env, items[1], &value))
+                    return enif_make_badarg(env);
+                
+                compression_level = value;
+            }
+            else if(enif_is_identical(items[0], ATOMS.atomWindowBits))
+            {
+                int value;
+                
+                if(!enif_get_int(env, items[1], &value))
+                    return enif_make_badarg(env);
+                
+                window_bits = value;
+            }
+            else if(enif_is_identical(items[0], ATOMS.atomMemLevel))
+            {
+                int value;
+                
+                if(!enif_get_int(env, items[1], &value))
+                    return enif_make_badarg(env);
+                
+                mem_level = value;
+            }
+            else if(enif_is_identical(items[0], ATOMS.atomCompStrategy))
+            {
+                int value;
+                
+                if(!enif_get_int(env, items[1], &value))
+                    return enif_make_badarg(env);
+                
+                compression_strategy = value;
+            }
+            else
+            {
+                return enif_make_badarg(env);
+            }
+        }
+    }
+    
     z_stream* stream = create_stream();
     
     if(stream == NULL)
@@ -178,7 +245,7 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     
     if(method == DEFLATE)
     {
-        if(deflateInit(stream, Z_DEFAULT_COMPRESSION) != Z_OK)
+        if(deflateInit2(stream, compression_level, Z_DEFLATED, window_bits, mem_level, compression_strategy) != Z_OK)
         {
             enif_free(stream);
             return make_error(env, "deflateInit failed");
@@ -186,7 +253,7 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     }
     else
     {
-        if(inflateInit(stream) != Z_OK)
+        if(inflateInit2(stream, window_bits) != Z_OK)
         {
             enif_free(stream);
             return make_error(env, "inflateInit failed");
@@ -282,6 +349,35 @@ ERL_NIF_TERM nif_zlib_read_data(ErlNifEnv* env, int argc, const ERL_NIF_TERM arg
     return enif_make_tuple2(env, ATOMS.atomOk, term);
 }
 
+ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    UNUSED(argc);
+    
+    ezlib_data* data = static_cast<ezlib_data*>(enif_priv_data(env));
+    
+    zlib_session* session = NULL;
+    
+    if(!enif_get_resource(env, argv[0], data->resZlibSession, (void**) &session))
+        return enif_make_badarg(env);
+    
+#if defined(USE_STATS)
+    CompressionStat stat = *session->stats;
+    double ratio;
+    
+    if(session->method == DEFLATE)
+        ratio = (1.0f- ((double)stat.processed_bytes/(double)stat.raw_bytes))*100;
+    else
+        ratio = (1.0f- ((double)stat.raw_bytes/(double)stat.processed_bytes))*100;
+       
+    ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC("raw_bytes", session->stats->raw_bytes),
+                                                 UINT64_METRIC("processed_bytes", session->stats->processed_bytes),
+                                                 DOUBLE_METRIC("ratio", ratio));
+    
+    return enif_make_tuple2(env, ATOMS.atomOk, stats);
+#else
+    return make_error(env, "Not available. Please compile with USE_STATS");
+#endif
+}
 
 
 

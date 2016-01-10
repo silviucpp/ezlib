@@ -9,6 +9,13 @@ struct atoms
     ERL_NIF_TERM atomError;
     ERL_NIF_TERM atomTrue;
     ERL_NIF_TERM atomFalse;
+    
+    //settings
+    
+    ERL_NIF_TERM atomCompressionLevel;
+    ERL_NIF_TERM atomWindowBits;
+    ERL_NIF_TERM atomMemLevel;
+    ERL_NIF_TERM atomCompStrategy;
 };
 
 struct ezlib_data
