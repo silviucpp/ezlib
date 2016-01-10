@@ -291,13 +291,16 @@ ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
         return enif_make_badarg(env);
     
 #if defined(USE_STATS)
-    double ratio;
+    double ratio = 0;
     
-    if(session->method == DEFLATE)
-        ratio = (1.0f- (static_cast<double>(session->stat_processed_bytes)/static_cast<double>(session->stat_raw_bytes)))*100;
-    else
-        ratio = (1.0f- (static_cast<double>(session->stat_raw_bytes)/static_cast<double>(session->stat_processed_bytes)))*100;
-       
+    if(session->stat_raw_bytes > 0 && session->stat_processed_bytes > 0)
+    {
+        if(session->method == DEFLATE)
+            ratio = (1.0f- (static_cast<double>(session->stat_processed_bytes)/static_cast<double>(session->stat_raw_bytes)))*100;
+        else
+            ratio = (1.0f- (static_cast<double>(session->stat_raw_bytes)/static_cast<double>(session->stat_processed_bytes)))*100;
+    }
+    
     ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC("raw_bytes", session->stat_raw_bytes),
                                                  UINT64_METRIC("processed_bytes", session->stat_processed_bytes),
                                                  DOUBLE_METRIC("processed_ratio", ratio));
