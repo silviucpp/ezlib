@@ -43,21 +43,8 @@ z_stream* create_stream()
     if(!stream)
         return NULL;
     
-    stream->next_in = NULL;
-    stream->avail_in = 0;
-    stream->total_in = 0;
-    stream->next_out = NULL;
-    stream->avail_out = 0;
-    stream->total_out = 0;
-    stream->msg = NULL;
-    stream->state = NULL;
-    stream->zalloc = Z_NULL;
-    stream->zfree = Z_NULL;
-    stream->opaque = Z_NULL;
+    memset(stream, 0, sizeof(z_stream));
     stream->data_type = Z_BINARY;
-    stream->adler = 0;
-    stream->reserved = 0;
-    
     return stream;
 }
 
