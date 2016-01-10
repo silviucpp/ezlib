@@ -65,8 +65,7 @@ static ErlNifFunc nif_funcs[] =
 {    
     {"new_session", 2, nif_zlib_new_session},
     {"new_session", 1, nif_zlib_new_session},
-    {"process_buffer", 3, nif_zlib_process_buffer},
-    {"read_data", 1, nif_zlib_read_data},
+    {"process_buffer", 2, nif_zlib_process_buffer},
     {"get_stats", 1, nif_get_stats},
 };
 

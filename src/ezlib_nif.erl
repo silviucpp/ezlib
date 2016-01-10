@@ -8,8 +8,7 @@
 -export([
     new_session/1,
     new_session/2,
-    process_buffer/3,
-    read_data/1,
+    process_buffer/2,
     get_stats/1
 ]).
 
@@ -42,10 +41,7 @@ new_session(_Method) ->
 new_session(_Method, _Opt) ->
     ?NOT_LOADED.
 
-process_buffer(_SessionRef, _Buffer, _ReturnData) ->
-    ?NOT_LOADED.
-
-read_data(_SessionRef) ->
+process_buffer(_SessionRef, _Buffer) ->
     ?NOT_LOADED.
 
 get_stats(_SessionRef) ->
