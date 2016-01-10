@@ -61,6 +61,26 @@ z_stream* create_stream()
     return stream;
 }
 
+void nif_zlib_session_free(ErlNifEnv* env, void* obj)
+{
+    UNUSED(env);
+    
+    zlib_session *session = static_cast<zlib_session*>(obj);
+    
+    if(session->stream)
+    {
+        if(session->method == DEFLATE)
+            deflateEnd(session->stream);
+        else
+            inflateEnd(session->stream);
+        
+        enif_free(session->stream);
+    }
+    
+    if(session->buffer)
+        delete session->buffer;
+}
+
 bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
 {
 #if defined(USE_STATS)
@@ -123,26 +143,6 @@ bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
     }
     
     return true;
-}
-
-void nif_zlib_session_free(ErlNifEnv* env, void* obj)
-{
-    UNUSED(env);
-    
-    zlib_session *session = static_cast<zlib_session*>(obj);
-    
-    if(session->stream)
-    {
-        if(session->method == DEFLATE)
-            deflateEnd(session->stream);
-        else
-            inflateEnd(session->stream);
-        
-        enif_free(session->stream);
-    }
-    
-    if(session->buffer)
-        delete session->buffer;
 }
 
 ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
