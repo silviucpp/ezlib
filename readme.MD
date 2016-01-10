@@ -20,6 +20,15 @@ DecompressedBin = StringBin
 - `compression_level` : Compression level 0 - 9 default 6. 0 no compression, 9 max compression
 - `window_bits` : The windowBits parameter is the base two logarithm of the window size (the size of the history buffer). It should be in the range 8..15 
 - `memory_level`: Specifies how much memory should be allocated for the internal compression state. Values between 1 to 9 default is 8
+- `compression_strategy`: The compression strategy that should be used. One of the following values (`Z_DEFAULT_STRATEGY` default one):
+
+```erlang
+-define(Z_FILTERED,         1).
+-define(Z_HUFFMAN_ONLY,     2).
+-define(Z_RLE,              3).
+-define(Z_FIXED,            4).
+-define(Z_DEFAULT_STRATEGY, 0).
+```
 
 Example:
 
