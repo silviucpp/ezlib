@@ -20,6 +20,20 @@
 
 typedef int (*PROCESSING_FUNCTION)(z_stream* strm, int flush);
 
+#if defined(USE_CUSTOM_ALLOCATOR)
+voidpf z_alloc(voidpf opaque, uInt items, uInt size)
+{
+    UNUSED(opaque);
+    return enif_alloc(items*size);
+}
+
+void z_free(voidpf opaque, voidpf address)
+{
+    UNUSED(opaque);
+    return enif_free(address);
+}
+#endif
+
 struct zlib_session
 {
     ByteBuffer* buffer;
@@ -38,6 +52,10 @@ z_stream* create_stream()
     
     memset(stream, 0, sizeof(z_stream));
     stream->data_type = Z_BINARY;
+#if defined(USE_CUSTOM_ALLOCATOR)
+    stream->zalloc = z_alloc;
+    stream->zfree = z_free;
+#endif
     return stream;
 }
 
