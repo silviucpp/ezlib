@@ -298,7 +298,7 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
     if(session->buffer->Capacity() > MAX_BUFFER_CAPACITY)
         session->buffer->Resize(DEFAULT_BUFFER_CAPACITY);
     
-    return enif_make_tuple2(env, ATOMS.atomOk, return_term);
+    return return_term;
 }
 
 ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])

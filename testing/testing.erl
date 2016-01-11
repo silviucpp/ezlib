@@ -16,11 +16,11 @@ test_compression() ->
     {ok, DeflateRef} = ezlib:new(?Z_DEFLATE),
     {ok, InflateRef} = ezlib:new(?Z_INFLATE),
 
-    {ok, CompressedBin} = ezlib:process(DeflateRef, StringBin),
-    {ok, DecompressedBin} = ezlib:process(InflateRef, CompressedBin),
+    CompressedBin = ezlib:process(DeflateRef, StringBin),
+    DecompressedBin = ezlib:process(InflateRef, CompressedBin),
 
-    {ok, CompressedBin2} = ezlib:process(DeflateRef, StringBin),
-    {ok, DecompressedBin2} = ezlib:process(InflateRef, CompressedBin2),
+    CompressedBin2 = ezlib:process(DeflateRef, StringBin),
+    DecompressedBin2 = ezlib:process(InflateRef, CompressedBin2),
 
     DecompressedBin = StringBin,
     DecompressedBin2 = StringBin,
@@ -33,11 +33,11 @@ test_compression_string() ->
     {ok, DeflateRef} = ezlib:new(?Z_DEFLATE, [{use_iolist, true}]),
     {ok, InflateRef} = ezlib:new(?Z_INFLATE, [{use_iolist, true}]),
 
-    {ok, CompressedBin} = ezlib:process(DeflateRef, String),
-    {ok, DecompressedBin} = ezlib:process(InflateRef, CompressedBin),
+    CompressedBin = ezlib:process(DeflateRef, String),
+    DecompressedBin = ezlib:process(InflateRef, CompressedBin),
 
-    {ok, CompressedBin2} = ezlib:process(DeflateRef, String),
-    {ok, DecompressedBin2} = ezlib:process(InflateRef, CompressedBin2),
+    CompressedBin2 = ezlib:process(DeflateRef, String),
+    DecompressedBin2 = ezlib:process(InflateRef, CompressedBin2),
 
     String = DecompressedBin,
     String = DecompressedBin2,

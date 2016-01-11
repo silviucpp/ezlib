@@ -8,8 +8,8 @@
 StringBin = <<"this is a string compressed with zlib nif library">>,
 {ok, DeflateRef} = ezlib:new(?Z_DEFLATE),
 {ok, InflateRef} = ezlib:new(?Z_INFLATE),
-{ok, CompressedBin} = ezlib:process(DeflateRef, StringBin),
-{ok, DecompressedBin} = ezlib:process(InflateRef, CompressedBin),
+CompressedBin = ezlib:process(DeflateRef, StringBin),
+DecompressedBin = ezlib:process(InflateRef, CompressedBin),
 DecompressedBin = StringBin
 ```
 
