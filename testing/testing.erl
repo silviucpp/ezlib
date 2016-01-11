@@ -4,6 +4,7 @@
 -include("ezlib.hrl").
 
 -export([test_compression/0,
+         test_compression_string/0,
          test_memory_usage/2,
          test_compression_ratio/4,
          test_compression_erlang/0]).
@@ -24,6 +25,24 @@ test_compression() ->
     DecompressedBin = StringBin,
     DecompressedBin2 = StringBin,
     ok.
+
+test_compression_string() ->
+
+    String = "this is a string compressed with zlib nif library",
+
+    {ok, DeflateRef} = ezlib:new(?Z_DEFLATE, [{use_iolist, true}]),
+    {ok, InflateRef} = ezlib:new(?Z_INFLATE, [{use_iolist, true}]),
+
+    {ok, CompressedBin} = ezlib:process(DeflateRef, String),
+    {ok, DecompressedBin} = ezlib:process(InflateRef, CompressedBin),
+
+    {ok, CompressedBin2} = ezlib:process(DeflateRef, String),
+    {ok, DecompressedBin2} = ezlib:process(InflateRef, CompressedBin2),
+
+    String = DecompressedBin,
+    String = DecompressedBin2,
+    ok.
+
 
 test_compression_erlang() ->
 

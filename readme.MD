@@ -17,6 +17,7 @@ DecompressedBin = StringBin
 
 `ezlib:new` accepts a second parameter where you can specify the following options:
 
+- `use_iolist` : Returns the output as string (iolist) not as binary (default).
 - `compression_level` : Compression level 0 - 9 default 6. 0 no compression, 9 max compression
 - `window_bits` : The windowBits parameter is the base two logarithm of the window size (the size of the history buffer). It should be in the range 8..15 
 - `memory_level`: Specifies how much memory should be allocated for the internal compression state. Values between 1 to 9 default is 8

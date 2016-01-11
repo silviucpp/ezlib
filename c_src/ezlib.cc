@@ -30,6 +30,7 @@ struct zlib_session
     z_stream*  stream;
     unsigned char method;
     PROCESSING_FUNCTION processing_function;
+    bool use_iolist;
 #if defined(USE_STATS)
     size_t stat_raw_bytes;
     size_t stat_processed_bytes;
@@ -122,6 +123,7 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     int window_bits = 15;
     int mem_level = 8;
     int compression_strategy = Z_DEFAULT_STRATEGY;
+    bool use_iolist = false;
     
     if(argc == 2)
     {
@@ -175,6 +177,10 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
                 
                 compression_strategy = value;
             }
+            else if(enif_is_identical(items[0], ATOMS.atomUseIoList))
+            {
+                use_iolist = enif_is_identical(items[1], ATOMS.atomTrue);
+            }
             else
             {
                 return enif_make_badarg(env);
@@ -223,6 +229,7 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     session->method = method;
     session->stream = stream;
     session->processing_function = (method == DEFLATE ? deflate : inflate);
+    session->use_iolist = use_iolist;
     
     ERL_NIF_TERM term = enif_make_resource(env, session);
     enif_release_resource(session);
@@ -241,12 +248,33 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
     if(!enif_get_resource(env, argv[0], data->resZlibSession, (void**) &session))
         return enif_make_badarg(env);
     
-    ErlNifBinary in_buffer;
-        
-    if(!enif_inspect_binary(env, argv[1], &in_buffer))
-        return enif_make_badarg(env);
+    bool process_result;
+    
+    if(enif_is_binary(env, argv[1]))
+    {
+        ErlNifBinary in_buffer;
+            
+        if(!enif_inspect_binary(env, argv[1], &in_buffer))
+            return enif_make_badarg(env);
 
-    if(!process_buffer(session, in_buffer.data, in_buffer.size))
+        process_result = process_buffer(session, in_buffer.data, in_buffer.size);
+    }
+    else
+    {
+        unsigned len;
+        
+        if(!enif_get_list_length(env, argv[1], &len))
+            return enif_make_badarg(env);
+        
+        char buff[len+1];
+        
+        if(enif_get_string(env, argv[1], buff, len+1, ERL_NIF_LATIN1) <= 0)
+            return enif_make_badarg(env);
+        
+        process_result = process_buffer(session, reinterpret_cast<unsigned char*>(buff), len);
+    }
+    
+    if(!process_result)
     {
         std::string error("process_buffer failed: ");
         
@@ -257,13 +285,20 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
     }
 
     size_t length = session->buffer->Length();
-    ERL_NIF_TERM term = make_binary(env, session->buffer->Data(), length);
+    
+    ERL_NIF_TERM return_term;
+    
+    if(session->use_iolist)
+        return_term = enif_make_string_len(env, session->buffer->Data(), length, ERL_NIF_LATIN1);
+    else
+        return_term = make_binary(env, session->buffer->Data(), length);
+    
     session->buffer->Consume(length);
     
     if(session->buffer->Capacity() > MAX_BUFFER_CAPACITY)
         session->buffer->Resize(DEFAULT_BUFFER_CAPACITY);
     
-    return enif_make_tuple2(env, ATOMS.atomOk, term);
+    return enif_make_tuple2(env, ATOMS.atomOk, return_term);
 }
 
 ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
