@@ -7,6 +7,7 @@
 #include <zlib.h>
 
 #include <string>
+#include <string.h>
 
 #define USE_STATS
 
