@@ -7,6 +7,7 @@
 #include <zlib.h>
 #include <string.h>
 #include <string>
+#include <string.h>
 
 #define UINT64_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_uint64(env, Property))
 #define DOUBLE_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_double(env, Property))

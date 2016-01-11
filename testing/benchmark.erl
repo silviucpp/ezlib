@@ -3,25 +3,23 @@
 
 -include("ezlib.hrl").
 
--define(STANZA,  <<"<iq from='silviu@woow.com' to='silviu@woow.com/macf57b9bf7' id='r3qu3st_@ct1v1ty_taskid' type='result'>
-   <query xmlns='jabber:iq:activity' start='1452386757868' size='20' unread='0'/>
- </iq>">>).
-
 -export([run/5]).
 
-ezlib_process(_Ref, 0) ->
+ezlib_process(_Ref, _Lines, 0) ->
     ok;
 
-ezlib_process(Ref, Nr) ->
-    ezlib:process(Ref, ?STANZA),
-    ezlib_process(Ref, Nr - 1).
+ezlib_process(Ref, Lines, Nr) ->
+    lists:foreach(fun(L) ->
+    	ezlib:process(Ref, L) end, Lines),
+    ezlib_process(Ref, Lines, Nr - 1).
 
-erlang_process(_Ref, 0) ->
+erlang_process(_Ref, _Lines, 0) ->
     ok;
 
-erlang_process(Ref, Nr) ->
-    zlib:deflate(Ref, ?STANZA, sync),
-    erlang_process(Ref, Nr - 1).
+erlang_process(Ref, Lines, Nr) ->
+    lists:foreach(fun(L) ->
+    	zlib:deflate(Ref, L, sync) end, Lines),
+    erlang_process(Ref, Lines, Nr - 1).
 
 finish(Nr, Time) ->
     TimeMs = Time/1000,
@@ -30,11 +28,13 @@ finish(Nr, Time) ->
 run(erlang, Nr, Level, Bits, Mem) ->
     Z=zlib:open(),
     ok = zlib:deflateInit(Z, Level, deflated, Bits, Mem, default),
-    {Time, _} = timer:tc( fun() -> erlang_process(Z, Nr) end),
+    Lines = read_from_file(),
+    {Time, _} = timer:tc( fun() -> erlang_process(Z, Lines, Nr) end),
     finish(Nr, Time),
     zlib:close(Z);
 
 run(ezlib, Nr, Level, Bits, Mem) ->
+    Lines = read_from_file(),
     Options =
     [
         {compression_level, Level},
@@ -43,6 +43,23 @@ run(ezlib, Nr, Level, Bits, Mem) ->
     ],
 
     {ok, DeflateRef} = ezlib:new(?Z_DEFLATE, Options),
-    {Time, _} = timer:tc( fun() -> ezlib_process(DeflateRef, Nr) end),
+    {Time, _} = timer:tc( fun() -> ezlib_process(DeflateRef, Lines, Nr) end),
     finish(Nr, Time),
     ezlib:metrics(DeflateRef).
+
+%% Assumes we have the file for testing in 'testing' directory
+read_from_file() ->
+    Dir = filename:join(lists:reverse(["testing" | tl(lists:reverse(filename:split(filename:dirname(code:which(ezlib)))))])),
+    Path = filename:join(Dir, "zlib_test.txt"),
+    {ok, Device} = file:open(Path, [read]),
+    get_lines(Device).
+
+
+get_lines(Device) ->
+    get_lines(Device, []).
+
+get_lines(Device, Accum) ->
+    case io:get_line(Device, "") of
+        eof  -> file:close(Device), Accum;
+        Line -> get_lines(Device, [Line|Accum])
+    end.
