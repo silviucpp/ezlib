@@ -8,12 +8,8 @@
 #include <string.h>
 #include <string>
 
-#define USE_STATS
-
-#if defined(USE_STATS)
-    #define UINT64_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_uint64(env, Property))
-    #define DOUBLE_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_double(env, Property))
-#endif
+#define UINT64_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_uint64(env, Property))
+#define DOUBLE_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_double(env, Property))
 
 #define DEFLATE 1
 #define INFLATE 2
@@ -31,10 +27,6 @@ struct zlib_session
     unsigned char method;
     PROCESSING_FUNCTION processing_function;
     bool use_iolist;
-#if defined(USE_STATS)
-    size_t stat_raw_bytes;
-    size_t stat_processed_bytes;
-#endif
 };
 
 z_stream* create_stream()
@@ -71,10 +63,6 @@ void nif_zlib_session_free(ErlNifEnv* env, void* obj)
 
 bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
 {
-#if defined(USE_STATS)
-    session->stat_raw_bytes += len;
-#endif
-
     int result;
     size_t bytes_to_write;
     unsigned char chunk[CHUNK_SIZE];
@@ -95,12 +83,7 @@ bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
         bytes_to_write = CHUNK_SIZE - session->stream->avail_out;
         
         if(bytes_to_write > 0)
-        {
-#if defined(USE_STATS)
-            session->stat_processed_bytes += bytes_to_write;
-#endif
             session->buffer->WriteBytes(reinterpret_cast<const char*>(chunk), bytes_to_write);
-        }
     }
     while (session->stream->avail_out == 0);
     
@@ -312,25 +295,21 @@ ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     if(!enif_get_resource(env, argv[0], data->resZlibSession, (void**) &session))
         return enif_make_badarg(env);
     
-#if defined(USE_STATS)
     double ratio = 0;
     
-    if(session->stat_raw_bytes > 0 && session->stat_processed_bytes > 0)
+    if(session->stream->total_in > 0 && session->stream->total_out > 0)
     {
         if(session->method == DEFLATE)
-            ratio = (1.0f- (static_cast<double>(session->stat_processed_bytes)/static_cast<double>(session->stat_raw_bytes)))*100;
+            ratio = (1.0f- (static_cast<double>(session->stream->total_out)/static_cast<double>(session->stream->total_in)))*100;
         else
-            ratio = (1.0f- (static_cast<double>(session->stat_raw_bytes)/static_cast<double>(session->stat_processed_bytes)))*100;
+            ratio = (1.0f- (static_cast<double>(session->stream->total_in)/static_cast<double>(session->stream->total_out)))*100;
     }
     
-    ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC("raw_bytes", session->stat_raw_bytes),
-                                                 UINT64_METRIC("processed_bytes", session->stat_processed_bytes),
-                                                 DOUBLE_METRIC("processed_ratio", ratio));
+    ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC("total_in", session->stream->total_in),
+                                                 UINT64_METRIC("total_out", session->stream->total_out),
+                                                 DOUBLE_METRIC("ratio", ratio));
     
     return enif_make_tuple2(env, ATOMS.atomOk, stats);
-#else
-    return make_error(env, "Not available. Please compile with USE_STATS");
-#endif
 }
 
 

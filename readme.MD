@@ -53,6 +53,16 @@ The default values for `window_bits` and `memory_level` are 15 and 8 so for this
 
 In addition to this memory ezlib allocates a 1 KB buffer used to avoid reallocation of memory all the time. This buffer is auto resizeable and cannot grow over 16 KB.
 
+### Metrics
+
+In order to see the sttistics regarding compression ratio you can use `ezlib:metrics/1`. Output looks like:
+
+```erlang
+{ok,{{total_in,192},
+     {total_out,158},
+     {ratio,17.708333333333336}}}
+```     
+
 ### Benchmarks (using the benchmark.erl from testing folder)
 
 `benchmark:run(erlang, 1000000, 1, 8, 2).`
