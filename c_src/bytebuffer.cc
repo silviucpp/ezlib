@@ -2,6 +2,7 @@
 #include "erl_nif.h"
 
 #include <algorithm>
+#include <string.h>
 
 ByteBuffer::ByteBuffer(size_t size)
 {

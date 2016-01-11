@@ -5,7 +5,7 @@
 #include "macros.h"
 
 #include <zlib.h>
-
+#include <string.h>
 #include <string>
 
 #define USE_STATS
