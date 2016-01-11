@@ -1,6 +1,6 @@
 # ezlib
 
-*An zlib NIF library for Erlang optimised for streaming. Around 50% - 60% faster than erlang zlib driver* 
+*An zlib NIF library for Erlang optimised for streaming. Around 30 - 40 % faster than erlang zlib driver* 
 
 ### Getting starting:
 
@@ -65,13 +65,6 @@ In order to see the sttistics regarding compression ratio you can use `ezlib:met
 
 ### Benchmarks (using the benchmark.erl from testing folder)
 
-`benchmark:run(erlang, 1000000, 1, 8, 2).`
+You can specify a file path, how many times to deflate it line by line and compression level, window size and memory level.
 
-Time to complete: 2451.745 ms  407872.76001378614 per second
-
-`benchmark:run(ezlib, 1000000, 1, 8, 2).`
- 
-Time to complete: 1537.777 ms  650289.3462446115 per second 
-
-So ezlib it's with around 59 % faster than erlang implementation on the lowest compression method. Even if you change the compression methods
-the results are almost the same because the zlib overhead is the same for both libs.
+`benchmark:run(ezlib,"file path here", 10000, 1, 8, 2).` or `benchmark:run(erlang,"file path here", 10000, 1, 8, 2).`
