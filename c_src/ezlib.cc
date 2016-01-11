@@ -5,16 +5,12 @@
 #include "macros.h"
 
 #include <zlib.h>
-
+#include <string.h>
 #include <string>
 #include <string.h>
 
-#define USE_STATS
-
-#if defined(USE_STATS)
-    #define UINT64_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_uint64(env, Property))
-    #define DOUBLE_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_double(env, Property))
-#endif
+#define UINT64_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_uint64(env, Property))
+#define DOUBLE_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_double(env, Property))
 
 #define DEFLATE 1
 #define INFLATE 2
@@ -31,10 +27,7 @@ struct zlib_session
     z_stream*  stream;
     unsigned char method;
     PROCESSING_FUNCTION processing_function;
-#if defined(USE_STATS)
-    size_t stat_raw_bytes;
-    size_t stat_processed_bytes;
-#endif
+    bool use_iolist;
 };
 
 z_stream* create_stream()
@@ -71,10 +64,6 @@ void nif_zlib_session_free(ErlNifEnv* env, void* obj)
 
 bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
 {
-#if defined(USE_STATS)
-    session->stat_raw_bytes += len;
-#endif
-
     int result;
     size_t bytes_to_write;
     unsigned char chunk[CHUNK_SIZE];
@@ -95,12 +84,7 @@ bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
         bytes_to_write = CHUNK_SIZE - session->stream->avail_out;
         
         if(bytes_to_write > 0)
-        {
-#if defined(USE_STATS)
-            session->stat_processed_bytes += bytes_to_write;
-#endif
             session->buffer->WriteBytes(reinterpret_cast<const char*>(chunk), bytes_to_write);
-        }
     }
     while (session->stream->avail_out == 0);
     
@@ -123,6 +107,7 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     int window_bits = 15;
     int mem_level = 8;
     int compression_strategy = Z_DEFAULT_STRATEGY;
+    bool use_iolist = false;
     
     if(argc == 2)
     {
@@ -176,6 +161,10 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
                 
                 compression_strategy = value;
             }
+            else if(enif_is_identical(items[0], ATOMS.atomUseIoList))
+            {
+                use_iolist = enif_is_identical(items[1], ATOMS.atomTrue);
+            }
             else
             {
                 return enif_make_badarg(env);
@@ -224,6 +213,7 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     session->method = method;
     session->stream = stream;
     session->processing_function = (method == DEFLATE ? deflate : inflate);
+    session->use_iolist = use_iolist;
     
     ERL_NIF_TERM term = enif_make_resource(env, session);
     enif_release_resource(session);
@@ -242,12 +232,33 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
     if(!enif_get_resource(env, argv[0], data->resZlibSession, (void**) &session))
         return enif_make_badarg(env);
     
-    ErlNifBinary in_buffer;
-        
-    if(!enif_inspect_binary(env, argv[1], &in_buffer))
-        return enif_make_badarg(env);
+    bool process_result;
+    
+    if(enif_is_binary(env, argv[1]))
+    {
+        ErlNifBinary in_buffer;
+            
+        if(!enif_inspect_binary(env, argv[1], &in_buffer))
+            return enif_make_badarg(env);
 
-    if(!process_buffer(session, in_buffer.data, in_buffer.size))
+        process_result = process_buffer(session, in_buffer.data, in_buffer.size);
+    }
+    else
+    {
+        unsigned len;
+        
+        if(!enif_get_list_length(env, argv[1], &len))
+            return enif_make_badarg(env);
+        
+        char buff[len+1];
+        
+        if(enif_get_string(env, argv[1], buff, len+1, ERL_NIF_LATIN1) <= 0)
+            return enif_make_badarg(env);
+        
+        process_result = process_buffer(session, reinterpret_cast<unsigned char*>(buff), len);
+    }
+    
+    if(!process_result)
     {
         std::string error("process_buffer failed: ");
         
@@ -258,13 +269,20 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
     }
 
     size_t length = session->buffer->Length();
-    ERL_NIF_TERM term = make_binary(env, session->buffer->Data(), length);
+    
+    ERL_NIF_TERM return_term;
+    
+    if(session->use_iolist)
+        return_term = enif_make_string_len(env, session->buffer->Data(), length, ERL_NIF_LATIN1);
+    else
+        return_term = make_binary(env, session->buffer->Data(), length);
+    
     session->buffer->Consume(length);
     
     if(session->buffer->Capacity() > MAX_BUFFER_CAPACITY)
         session->buffer->Resize(DEFAULT_BUFFER_CAPACITY);
     
-    return enif_make_tuple2(env, ATOMS.atomOk, term);
+    return return_term;
 }
 
 ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
@@ -278,25 +296,21 @@ ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     if(!enif_get_resource(env, argv[0], data->resZlibSession, (void**) &session))
         return enif_make_badarg(env);
     
-#if defined(USE_STATS)
     double ratio = 0;
     
-    if(session->stat_raw_bytes > 0 && session->stat_processed_bytes > 0)
+    if(session->stream->total_in > 0 && session->stream->total_out > 0)
     {
         if(session->method == DEFLATE)
-            ratio = (1.0f- (static_cast<double>(session->stat_processed_bytes)/static_cast<double>(session->stat_raw_bytes)))*100;
+            ratio = (1.0f- (static_cast<double>(session->stream->total_out)/static_cast<double>(session->stream->total_in)))*100;
         else
-            ratio = (1.0f- (static_cast<double>(session->stat_raw_bytes)/static_cast<double>(session->stat_processed_bytes)))*100;
+            ratio = (1.0f- (static_cast<double>(session->stream->total_in)/static_cast<double>(session->stream->total_out)))*100;
     }
     
-    ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC("raw_bytes", session->stat_raw_bytes),
-                                                 UINT64_METRIC("processed_bytes", session->stat_processed_bytes),
-                                                 DOUBLE_METRIC("processed_ratio", ratio));
+    ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC("total_in", session->stream->total_in),
+                                                 UINT64_METRIC("total_out", session->stream->total_out),
+                                                 DOUBLE_METRIC("ratio", ratio));
     
     return enif_make_tuple2(env, ATOMS.atomOk, stats);
-#else
-    return make_error(env, "Not available. Please compile with USE_STATS");
-#endif
 }
 
 
