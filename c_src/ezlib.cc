@@ -16,9 +16,11 @@
 #define CHUNK_SIZE 1024
 
 #define DEFAULT_BUFFER_CAPACITY 1024
-#define MAX_BUFFER_CAPACITY 16000
+#define MAX_BUFFER_CAPACITY 8192
 
 typedef int (*PROCESSING_FUNCTION)(z_stream* strm, int flush);
+
+#define USE_CUSTOM_ALLOCATOR
 
 #if defined(USE_CUSTOM_ALLOCATOR)
 voidpf z_alloc(voidpf opaque, uInt items, uInt size)

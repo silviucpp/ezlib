@@ -51,11 +51,11 @@ zlib memory footprint which can be calculated as:
 
 The default values for `window_bits` and `memory_level` are 15 and 8 so for this values the default required memory for deflate is 256 KB and for inflate is 44 KB.
 
-In addition to this memory ezlib allocates a 1 KB buffer used to avoid reallocation of memory all the time. This buffer is auto resizeable and cannot grow over 16 KB.
+In addition to this memory ezlib allocates a 1 KB buffer used to avoid reallocation of memory all the time. This buffer is auto resizeable and cannot grow over 8KB.
 
 ### Metrics
 
-In order to see the sttistics regarding compression ratio you can use `ezlib:metrics/1`. Output looks like:
+In order to see the statistics regarding compression ratio you can use `ezlib:metrics/1`. Output looks like:
 
 ```erlang
 {ok,{{total_in,192},

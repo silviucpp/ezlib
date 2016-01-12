@@ -30,7 +30,7 @@ run(erlang, Path, Nr, Level, Bits, Mem) ->
     ok = zlib:deflateInit(Z, Level, deflated, Bits, Mem, default),
     Lines = read_from_file(Path),
     {Time, _} = timer:tc( fun() -> erlang_process(Z, Lines, Nr) end),
-    finish(Nr, Time),
+    finish(Nr*length(Lines), Time),
     zlib:close(Z);
 
 run(ezlib, Path, Nr, Level, Bits, Mem) ->
@@ -44,7 +44,7 @@ run(ezlib, Path, Nr, Level, Bits, Mem) ->
 
     {ok, DeflateRef} = ezlib:new(?Z_DEFLATE, Options),
     {Time, _} = timer:tc( fun() -> ezlib_process(DeflateRef, Lines, Nr) end),
-    finish(Nr, Time),
+    finish(Nr*length(Lines), Time),
     ezlib:metrics(DeflateRef).
 
 read_from_file(Path) ->
