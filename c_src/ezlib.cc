@@ -83,6 +83,9 @@ void nif_zlib_session_free(ErlNifEnv* env, void* obj)
 
 bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
 {
+    if(!len)
+        return true;
+
     int result;
     size_t bytes_to_write;
     unsigned char chunk[CHUNK_SIZE];
