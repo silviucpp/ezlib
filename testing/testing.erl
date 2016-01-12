@@ -5,6 +5,7 @@
 
 -export([test_compression/0,
          test_compression_string/0,
+         test_compression_iolist/0,
          test_memory_usage/2,
          test_compression_ratio/4,
          test_compression_erlang/0]).
@@ -43,6 +44,23 @@ test_compression_string() ->
     String = DecompressedBin2,
     ok.
 
+test_compression_iolist() ->
+
+    IoList = [[60,63,120,109,108,32,118,101, [" xml:lang='","en","'"],62]],
+    String = lists:flatten(IoList),
+
+    {ok, DeflateRef} = ezlib:new(?Z_DEFLATE, [{use_iolist, true}]),
+    {ok, InflateRef} = ezlib:new(?Z_INFLATE, [{use_iolist, true}]),
+
+    CompressedBin = ezlib:process(DeflateRef, IoList),
+    DecompressedBin = ezlib:process(InflateRef, CompressedBin),
+
+    CompressedBin2 = ezlib:process(DeflateRef, IoList),
+    DecompressedBin2 = ezlib:process(InflateRef, CompressedBin2),
+
+    String = DecompressedBin,
+    String = DecompressedBin2,
+    ok.
 
 test_compression_erlang() ->
 

@@ -251,33 +251,20 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
     if(!enif_get_resource(env, argv[0], data->resZlibSession, (void**) &session))
         return enif_make_badarg(env);
     
-    bool process_result;
+    ErlNifBinary in_buffer;
     
     if(enif_is_binary(env, argv[1]))
     {
-        ErlNifBinary in_buffer;
-            
         if(!enif_inspect_binary(env, argv[1], &in_buffer))
             return enif_make_badarg(env);
-
-        process_result = process_buffer(session, in_buffer.data, in_buffer.size);
     }
     else
     {
-        unsigned len;
-        
-        if(!enif_get_list_length(env, argv[1], &len))
+        if(!enif_inspect_iolist_as_binary(env, argv[1], &in_buffer))
             return enif_make_badarg(env);
-        
-        char buff[len+1];
-        
-        if(enif_get_string(env, argv[1], buff, len+1, ERL_NIF_LATIN1) <= 0)
-            return enif_make_badarg(env);
-        
-        process_result = process_buffer(session, reinterpret_cast<unsigned char*>(buff), len);
     }
     
-    if(!process_result)
+    if(!process_buffer(session, in_buffer.data, in_buffer.size))
     {
         std::string error("process_buffer failed: ");
         

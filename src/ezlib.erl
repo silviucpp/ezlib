@@ -18,7 +18,7 @@ new(Method, Opt) ->
     ezlib_nif:new_session(Method, Opt).
 
 -spec(process(SessionRef :: reference(), Buffer :: binary() | iolist()) ->
-    binary() | iolist() | badarg | {error, Reason :: binary()}).
+    binary() | string() | badarg | {error, Reason :: binary()}).
 
 process(SessionRef, Buffer) ->
     ezlib_nif:process_buffer(SessionRef, Buffer).
