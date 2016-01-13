@@ -99,7 +99,12 @@ bool process_buffer(zlib_session* session, unsigned char* data, size_t len)
         session->stream->next_out =  chunk;
         
         result = session->processing_function(session->stream, Z_SYNC_FLUSH);
-        
+
+        // Output buffer was completely consumed and we have no more data to process
+        // http://www.zlib.net/zlib_faq.html#faq05
+        if(session->method == INFLATE && result == Z_BUF_ERROR && session->stream->avail_out == CHUNK_SIZE)
+            return true;
+
         if (result != Z_OK)
             return false;
         
