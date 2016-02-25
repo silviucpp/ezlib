@@ -4,7 +4,7 @@
 #include "nif_utils.h"
 #include "macros.h"
 
-#include <zlib.h>
+#include "zlib.h"
 #include <string.h>
 #include <string>
 
