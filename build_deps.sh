@@ -65,19 +65,19 @@ function BuildZlib()
 
 	pushd $DEPS_LOCATION
 	pushd $DESTINATION
-	
-	case $ZLIB_FORK in
-		cloudflare)
-			case $OS in
-				Darwin)
-					export CFLAGS="-msse4.2"
-					;;
-				*)
-			esac
-			;;
-		*)
-	esac
-		
+
+    case $OS in
+        Darwin)
+            CPP_FLAGS="-msse4.2 -O3"
+            ;;
+        *)
+            CPP_FLAGS="-msse4.2 -mpclmul -O3"
+            ;;
+    esac
+
+	echo "CFLAGS=$CPP_FLAGS"
+    export CFLAGS="$CPP_FLAGS"
+
 	./configure --static
 	make
 	
