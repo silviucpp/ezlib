@@ -71,7 +71,7 @@ function BuildZlib()
             CPP_FLAGS="-msse4.2 -O3"
             ;;
         *)
-            CPP_FLAGS="-msse4.2 -mpclmul -O3"
+            CPP_FLAGS="-fPIC -msse4.2 -mpclmul -O3"
             ;;
     esac
 
