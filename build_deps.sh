@@ -15,7 +15,7 @@ ZLIBNG_REPO=https://github.com/Dead2/zlib-ng.git
 ZLIBNG_REV=ba7f0eb6e294306ac6d771216ea4442f2ea2d830
 
 DEPS_LOCATION=deps
-DESTINATION=zlib
+DESTINATION=zlib2
 
 function DownloadZlib()
 {
@@ -80,6 +80,8 @@ function BuildZlib()
 
 	./configure --static
 	make
+	rm -f libz2.a
+	cp libz.a libz2.a
 	
 	popd	
 	popd
