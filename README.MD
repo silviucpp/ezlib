@@ -1,6 +1,6 @@
 # ezlib
 
-*An zlib NIF library for Erlang optimised for streaming. Much faster than the erlang zlib driver (around 69 % based on the last tests) * 
+*An zlib NIF library for Erlang optimised for streaming. Much faster than the erlang zlib driver (with over 60%)* 
 
 ### Change log:
 
@@ -88,10 +88,10 @@ Zlib settings:
 
 Results
 
-zlib library       | Run1 (ms) | Run2 (ms) | Run3 (ms) | Compression Ratio (%) |
---------------------------------------------------------------------------------
-erlang zlib driver | 20128.801 | 20038.368 | 20000.725 | n/a                   |
-ezlib baseline     | 17588.222 | 17569.594 | 17610.2   | 67.92                 |
-ezlib cloudflare   | 15077.336 | 15074.345 | 15078.263 | 67.30                 |
-ezlib intel        | 14392.551 | 14339.686 | 14364.061 | 71.15                 |
-ezlib zlibng       | 13868.952 | 13855.77  | 13847.749 | 71.09                 |
+| zlib library       | Run1 (ms) | Run2 (ms) | Run3 (ms) | Compression Ratio (%) |
+----------------------------------------------------------------------------------
+| erlang zlib driver | 20128.801 | 20038.368 | 20000.725 | n/a                   |
+| ezlib baseline     | 17588.222 | 17569.594 | 17610.2   | 67.92                 |
+| ezlib cloudflare   | 15077.336 | 15074.345 | 15078.263 | 67.30                 |
+| ezlib intel        | 14392.551 | 14339.686 | 14364.061 | 71.15                 |
+| ezlib zlibng       | 13868.952 | 13855.77  | 13847.749 | 71.09                 |
