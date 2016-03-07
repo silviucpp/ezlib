@@ -1,7 +1,7 @@
 #ifndef EZLIB_C_SRC_EZLIB_H_
 #define EZLIB_C_SRC_EZLIB_H_
 
-#include "erl_nif.h"
+#include "nif.h"
 
 void nif_zlib_session_free(ErlNifEnv* env, void* obj);
 

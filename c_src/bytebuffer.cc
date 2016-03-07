@@ -1,5 +1,5 @@
 #include "bytebuffer.h"
-#include "erl_nif.h"
+#include "nif.h"
 
 #include <algorithm>
 #include <string.h>
