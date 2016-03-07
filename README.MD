@@ -4,12 +4,12 @@
 
 ### Change log:
 
-v2.0 - Integrated support for external zlib forks (around 69 % faster than erlang driver):
-        a) baseline - will statically link with the original zlib
-        b) cloudflare - will statically link with the cloudflare zlib fork
-        c) intel - will statically link with the intel zlib fork
-        d) zlibng (default) - will statically link with zlibng fork
-v1.0 - Initial implementation. From load testing there is around 30 % improvements that `zlib erlang driver`.
+- v2.0 - Integrated support for external zlib forks (around 69 % faster than erlang driver):
+    - [baseline][1] - will statically link with the original zlib
+    - [cloudflare][2] - will statically link with the cloudflare zlib fork
+    - [intel][3] - will statically link with the intel zlib fork
+    - [zlibng][4] (default) - will statically link with zlibng fork
+- v1.0 - Initial implementation. From load testing there is around 30 % improvements that `zlib erlang driver`.
 
 ### Getting starting:
 
@@ -95,3 +95,12 @@ Results:
 | ezlib cloudflare   | 15077.336 | 15074.345 | 15078.263 | 67.30                 |
 | ezlib intel        | 14392.551 | 14339.686 | 14364.061 | 71.15                 |
 | ezlib zlibng       | 13868.952 | 13855.77  | 13847.749 | 71.09                 |
+
+Other usefull resources regarding the optimisations did by Intel, Cloudflare and ZlibNg into their forks and other benchmakrs as well can be found [here][5] and [here][6].
+
+[1]:https://github.com/madler/zlib.git
+[2]:https://github.com/cloudflare/zlib.git
+[3]:https://github.com/jtkukunas/zlib.git
+[4]:https://github.com/Dead2/zlib-ng.git
+[5]:https://www.snellman.net/blog/archive/2014-08-04-comparison-of-intel-and-cloudflare-zlib-patches.html
+[6]:http://www.snellman.net/blog/archive/2015-06-05-updated-zlib-benchmarks/
