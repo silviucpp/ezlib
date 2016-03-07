@@ -1,6 +1,15 @@
 # ezlib
 
-*An zlib NIF library for Erlang optimised for streaming. Around 30 - 40 % faster than erlang zlib driver* 
+*An zlib NIF library for Erlang optimised for streaming. Much faster than the erlang zlib driver (with over 60%)* 
+
+### Change log:
+
+- v2.0 - Integrated support for external zlib forks (around 69 % faster than erlang driver):
+    - [baseline][1] - will statically link with the original zlib
+    - [cloudflare][2] - will statically link with the cloudflare zlib fork
+    - [intel][3] - will statically link with the intel zlib fork
+    - [zlibng][4] (default) - will statically link with zlibng fork
+- v1.0 - Initial implementation. From load testing there is around 30 % improvements that `zlib erlang driver`.
 
 ### Getting starting:
 
@@ -68,3 +77,30 @@ In order to see the statistics regarding compression ratio you can use `ezlib:me
 You can specify a file path, how many times to deflate it line by line and compression level, window size and memory level.
 
 `benchmark:run(ezlib,"file path here", 10000, 1, 8, 2).` or `benchmark:run(erlang,"file path here", 10000, 1, 8, 2).`
+
+Benchmark results compressing a text file line by line 200 times on a Ubuntu 14.04 LTS ( `benchmark:run(ezlib,"file path here", 200, 6, 10, 1).` ):
+
+Zlib settings:
+
+- `Compression level`: 6
+- `Window Size`: 10
+- `Memory Level` : 1
+
+Results:
+
+| zlib library       | Run1 (ms) | Run2 (ms) | Run3 (ms) | Compression Ratio (%) |
+|:------------------:|:---------:|:---------:|:---------:|:---------------------:|
+| erlang zlib driver | 20128.801 | 20038.368 | 20000.725 | N/A                   |
+| ezlib baseline     | 17588.222 | 17569.594 | 17610.2   | 67.92                 |
+| ezlib cloudflare   | 15077.336 | 15074.345 | 15078.263 | 67.30                 |
+| ezlib intel        | 14392.551 | 14339.686 | 14364.061 | 71.15                 |
+| ezlib zlibng       | 13868.952 | 13855.77  | 13847.749 | 71.09                 |
+
+Other usefull resources regarding the optimisations did by Intel, Cloudflare and ZlibNg into their forks and other benchmakrs as well can be found [here][5] and [here][6].
+
+[1]:https://github.com/madler/zlib.git
+[2]:https://github.com/cloudflare/zlib.git
+[3]:https://github.com/jtkukunas/zlib.git
+[4]:https://github.com/Dead2/zlib-ng.git
+[5]:https://www.snellman.net/blog/archive/2014-08-04-comparison-of-intel-and-cloudflare-zlib-patches.html
+[6]:http://www.snellman.net/blog/archive/2015-06-05-updated-zlib-benchmarks/

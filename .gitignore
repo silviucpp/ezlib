@@ -5,3 +5,4 @@
 /priv/
 *.DS_Store
 *.iml
+/deps/
