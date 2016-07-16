@@ -9,10 +9,10 @@ CLOUDFLARE_REPO=https://github.com/cloudflare/zlib.git
 CLOUDFLARE_REV=a80420c63532c25220a54ea0980667c02303460a
 
 INTEL_REPO=https://github.com/jtkukunas/zlib.git
-INTEL_REV=e176b3c23ace88d5ded5b8f8371bbab6d7b02ba8
+INTEL_REV=4b9e3f0c56ce0a354bcb11f048f870f2d0fc544e
 
 ZLIBNG_REPO=https://github.com/Dead2/zlib-ng.git
-ZLIBNG_REV=ba7f0eb6e294306ac6d771216ea4442f2ea2d830
+ZLIBNG_REV=515fcf5ff87957dc867c872d5af1b209384a4288
 
 DEPS_LOCATION=deps
 DESTINATION=zlib2
