@@ -20,9 +20,6 @@
 
 typedef int (*PROCESSING_FUNCTION)(z_stream* strm, int flush);
 
-#define USE_CUSTOM_ALLOCATOR
-#define CHECK_CALLER_PROCESS
-
 #if defined(USE_CUSTOM_ALLOCATOR)
 voidpf z_alloc(voidpf opaque, uInt items, uInt size)
 {
@@ -270,7 +267,7 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
     ErlNifPid current_pid;
     
     if(enif_self(env, &current_pid) && !enif_is_identical(enif_make_pid(env, &session->parent_pid), enif_make_pid(env, &current_pid)))
-        return enif_raise_exception(env, make_error(env, "ezlib session was called on another process."));
+        return make_error(env, "ezlib session was created on a different process");
 #endif
     
     ErlNifBinary in_buffer;
@@ -293,7 +290,7 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
         if(session->stream->msg)
             error.append(session->stream->msg);
         
-        return enif_raise_exception(env, make_error(env, error.c_str()));
+        return make_error(env, error.c_str());
     }
 
     size_t length = session->buffer->Length();

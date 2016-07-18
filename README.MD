@@ -4,12 +4,18 @@
 
 ### Change log:
 
-- v2.0 - Integrated support for external zlib forks (around 69 % faster than erlang driver):
+- v2.1
+    - Add support for checking if the process that plays with the ezlib session is the same that created it. See Notes for more info
+    - Updated the forks versions and changed to use baseline as default fork
+
+- v2.0
+    - Integrated support for external zlib forks (around 69 % faster than erlang driver):
     - [baseline][1] - will statically link with the original zlib
     - [cloudflare][2] - will statically link with the cloudflare zlib fork
     - [intel][3] (default)- will statically link with the intel zlib fork
     - [zlibng][4] - will statically link with zlibng fork
-- v1.0 - Initial implementation. From load testing there is around 30 % improvements that `zlib erlang driver`.
+- v1.0
+    - Initial implementation. From load testing there is around 30 % improvements that `zlib erlang driver`.
 
 ### Getting starting:
 
@@ -21,6 +27,13 @@ CompressedBin = ezlib:process(DeflateRef, StringBin),
 DecompressedBin = ezlib:process(InflateRef, CompressedBin),
 DecompressedBin = StringBin
 ```
+
+### Notes
+
+Based on [zlib FAQ][7] thread safety of the library can be achieved by meeting several conditions. The most important being
+the fact that you should only operate on any given zlib stream from a single thread at a time. In erlang this means that
+you need to operate on a ezlib session from the same process that created it. The build `2.1` returns an error in case this is not
+achieved. You can disable this by removing from build options in `rebar.config` the `-DCHECK_CALLER_PROCESS` directive.
 
 ### Settings
 
@@ -104,3 +117,4 @@ Other usefull resources regarding the optimisations did by Intel, Cloudflare and
 [4]:https://github.com/Dead2/zlib-ng.git
 [5]:https://www.snellman.net/blog/archive/2014-08-04-comparison-of-intel-and-cloudflare-zlib-patches.html
 [6]:http://www.snellman.net/blog/archive/2015-06-05-updated-zlib-benchmarks/
+[7]:http://www.zlib.net/zlib_faq.html#faq21
