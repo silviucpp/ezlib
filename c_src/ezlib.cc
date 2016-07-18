@@ -42,7 +42,7 @@ struct zlib_session
     PROCESSING_FUNCTION processing_function;
     bool use_iolist;
 #if defined CHECK_CALLER_PROCESS
-    ErlNifPid parent_pid;
+    ERL_NIF_TERM owner_pid;
 #endif
 };
 
@@ -243,7 +243,9 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     session->processing_function = (method == DEFLATE ? deflate : inflate);
     session->use_iolist = use_iolist;
 #if defined CHECK_CALLER_PROCESS
-    enif_self(env, &session->parent_pid);
+    ErlNifPid current_pid;
+    enif_self(env, &current_pid);
+    session->owner_pid = enif_make_pid(env, &current_pid);
 #endif
     
     ERL_NIF_TERM term = enif_make_resource(env, session);
@@ -266,7 +268,7 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
 #if defined CHECK_CALLER_PROCESS
     ErlNifPid current_pid;
     
-    if(enif_self(env, &current_pid) && !enif_is_identical(enif_make_pid(env, &session->parent_pid), enif_make_pid(env, &current_pid)))
+    if(enif_self(env, &current_pid) && !enif_is_identical(session->owner_pid, enif_make_pid(env, &current_pid)))
         return make_error(env, "ezlib session was created on a different process");
 #endif
     

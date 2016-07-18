@@ -3,12 +3,31 @@
 
 -include("ezlib.hrl").
 
--export([test_compression/0,
-         test_compression_string/0,
-         test_compression_iolist/0,
-         test_memory_usage/2,
-         test_compression_ratio/4,
-         test_compression_erlang/0]).
+-export([
+    test_bad_process/0,
+    test_compression/0,
+    test_compression_string/0,
+    test_compression_iolist/0,
+    test_memory_usage/2,
+    test_compression_ratio/4,
+    test_compression_erlang/0
+]).
+
+test_bad_process() ->
+    ParentProcess = self(),
+
+    FunCreate = fun() ->
+        {ok, Dr} = ezlib:new(?Z_DEFLATE),
+        ParentProcess ! {session, Dr}
+    end,
+    spawn(FunCreate),
+
+    DeflateRef = receive
+        {session, S} ->
+            S
+    end,
+    {error, Reason} = ezlib:process(DeflateRef, <<"this is a string compressed with zlib nif library">>),
+    Reason.
 
 test_compression() ->
 
