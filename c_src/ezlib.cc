@@ -3,8 +3,8 @@
 #include "ezlib_nif.h"
 #include "nif_utils.h"
 #include "macros.h"
-
 #include "zlib2/zlib.h"
+
 #include <string.h>
 #include <string>
 

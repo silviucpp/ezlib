@@ -12,7 +12,7 @@
     - Integrated support for external zlib forks (around 69 % faster than erlang driver):
     - [baseline][1] - will statically link with the original zlib
     - [cloudflare][2] - will statically link with the cloudflare zlib fork
-    - [intel][3] (default)- will statically link with the intel zlib fork
+    - [intel][3] - will statically link with the intel zlib fork
     - [zlibng][4] - will statically link with zlibng fork
 - v1.0
     - Initial implementation. From load testing there is around 30 % improvements that `zlib erlang driver`.
