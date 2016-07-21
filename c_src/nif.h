@@ -28,6 +28,7 @@
     #pragma weak enif_open_resource_type
     #pragma weak enif_release_resource
     #pragma weak enif_priv_data
+    #pragma weak enif_self
 #endif
 
 #endif
