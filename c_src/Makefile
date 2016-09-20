@@ -7,11 +7,24 @@ PROJECT ?= $(notdir $(BASEDIR))
 PROJECT := $(strip $(PROJECT))
 
 C_SRC_DIR = $(CURDIR)
+C_SRC_ENV ?= $(C_SRC_DIR)/env.mk
 C_SRC_OUTPUT ?= $(CURDIR)/../priv/$(PROJECT)_nif.so
 
-ERTS_INCLUDE_DIR ?= $(shell erl -noshell -s init stop -eval "io:format(\"~s/erts-~s/include/\", [code:root_dir(), erlang:system_info(version)]).")
-ERL_INTERFACE_INCLUDE_DIR ?= $(shell erl -noshell -s init stop -eval "io:format(\"~s\", [code:lib_dir(erl_interface, include)]).")
-ERL_INTERFACE_LIB_DIR ?= $(shell erl -noshell -s init stop -eval "io:format(\"~s\", [code:lib_dir(erl_interface, lib)]).")
+#in case the env.mk doesn't exist create it.
+ifeq ($(wildcard $(C_SRC_ENV)),)
+	GEN_ENV ?= $(shell erl -noshell -s init stop -eval "file:write_file(\"$(C_SRC_ENV)\", \
+		io_lib:format( \
+			\"ERTS_INCLUDE_DIR ?= ~s/erts-~s/include/~n\" \
+			\"ERL_INTERFACE_INCLUDE_DIR ?= ~s~n\" \
+			\"ERL_INTERFACE_LIB_DIR ?= ~s~n\", \
+			[code:root_dir(), erlang:system_info(version), \
+			code:lib_dir(erl_interface, include), \
+			code:lib_dir(erl_interface, lib)])), \
+		halt().")
+    $(GEN_ENV)
+endif
+
+include $(C_SRC_ENV)
 
 # System type and C compiler/flags.
 
@@ -98,4 +111,4 @@ $(C_SRC_OUTPUT): $(OBJECTS)
 	$(COMPILE_CPP) $(OUTPUT_OPTION) $<
 
 clean:
-	@rm -f $(C_SRC_OUTPUT) $(OBJECTS)
+	@rm -f $(C_SRC_OUTPUT) $(OBJECTS); rm -f $(C_SRC_ENV)
