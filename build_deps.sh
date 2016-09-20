@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
+DEPS_LOCATION=_build
+DESTINATION=zlib2
 ZLIB_FORK=$1
+
+if [ -d "$DEPS_LOCATION/$DESTINATION" ]; then
+    echo "Zlib fork already exist. delete $DEPS_LOCATION/$DESTINATION for a fresh checkout."
+    exit 0
+fi
 
 BASELINE_REPO=https://github.com/madler/zlib.git
 BASELINE_REV=50893291621658f355bc5b4d450a8d06a563053d
@@ -14,9 +21,6 @@ INTEL_REV=4b9e3f0c56ce0a354bcb11f048f870f2d0fc544e
 ZLIBNG_REPO=https://github.com/Dead2/zlib-ng.git
 ZLIBNG_REV=515fcf5ff87957dc867c872d5af1b209384a4288
 
-DEPS_LOCATION=deps
-DESTINATION=zlib2
-
 function DownloadZlib()
 {
 	case $ZLIB_FORK in
@@ -24,17 +28,17 @@ function DownloadZlib()
 			REPO=$BASELINE_REPO
 			REV=$BASELINE_REV
 			;;
-			
+
 		cloudflare)
 			REPO=$CLOUDFLARE_REPO
 			REV=$CLOUDFLARE_REV
 			;;
-			
+
 		intel)
 			REPO=$INTEL_REPO
 			REV=$INTEL_REV
 			;;
-			
+
 		zlibng)
 			REPO=$ZLIBNG_REPO
 			REV=$ZLIBNG_REV
@@ -45,9 +49,9 @@ function DownloadZlib()
 		 	exit 1	
 		 	;;
 	esac
-	
+
 	echo "repo=$REPO rev=$REV"
-	
+
 
 	mkdir -p $DEPS_LOCATION
 	pushd $DEPS_LOCATION
@@ -82,8 +86,8 @@ function BuildZlib()
 	make
 	rm -f libz2.a
 	cp libz.a libz2.a
-	
-	popd	
+
+	popd
 	popd
 }
 
