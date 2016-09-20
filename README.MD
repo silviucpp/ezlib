@@ -4,6 +4,9 @@
 
 ### Change log:
 
+- v2.2
+    - Add `rebar3` support
+
 - v2.1
     - Add support for checking if the process that plays with the ezlib session is the same that created it. See Notes for more info
     - Updated the forks versions and changed to use baseline as default fork
@@ -33,7 +36,7 @@ DecompressedBin = StringBin
 Based on [zlib FAQ][7] thread safety of the library can be achieved by meeting several conditions. The most important being
 the fact that you should only operate on any given zlib stream from a single thread at a time. In erlang this means that
 you need to operate on a ezlib session from the same process that created it. The build `2.1` returns an error in case this is not
-achieved. You can disable this by removing from build options in `rebar.config` the `-DCHECK_CALLER_PROCESS` directive.
+achieved. You can disable this by removing from build options in `c_src/Makefile` the `-DCHECK_CALLER_PROCESS` directive.
 
 ### Settings
 
