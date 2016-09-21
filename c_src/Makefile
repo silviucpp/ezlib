@@ -10,8 +10,8 @@ C_SRC_DIR = $(CURDIR)
 C_SRC_ENV ?= $(C_SRC_DIR)/env.mk
 C_SRC_OUTPUT ?= $(CURDIR)/../priv/$(PROJECT)_nif.so
 
-#in case the env.mk doesn't exist create it.
-ifeq ($(wildcard $(C_SRC_ENV)),)
+#regenerate all the time the env.mk
+ifneq ($(wildcard $(C_SRC_DIR)),)
 	GEN_ENV ?= $(shell erl -noshell -s init stop -eval "file:write_file(\"$(C_SRC_ENV)\", \
 		io_lib:format( \
 			\"ERTS_INCLUDE_DIR ?= ~s/erts-~s/include/~n\" \
