@@ -4,12 +4,9 @@
 CURDIR := $(shell pwd)
 BASEDIR := $(abspath $(CURDIR)/..)
 
-PROJECT ?= $(notdir $(BASEDIR))
-PROJECT := $(strip $(PROJECT))
-
 C_SRC_DIR = $(CURDIR)
 C_SRC_ENV ?= $(C_SRC_DIR)/env.mk
-C_SRC_OUTPUT ?= $(CURDIR)/../priv/$(PROJECT)_nif.so
+C_SRC_OUTPUT ?= $(CURDIR)/../priv/$(PROJECT_NIF_NAME).so
 
 #regenerate all the time the env.mk
 ifneq ($(wildcard $(C_SRC_DIR)),)

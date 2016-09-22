@@ -1,8 +1,9 @@
 
+PROJECT_NIF_NAME=ezlib_nif
+
 include nif.mk
 
 ifeq ($(UNAME_SYS), Darwin)
-	CXXFLAGS += -g -Wextra -Werror -Wno-missing-field-initializers -fno-exceptions -fno-rtti -DUSE_CUSTOM_ALLOCATOR -DCHECK_CALLER_PROCESS -isystem $(BASEDIR)/_build
 	LDFLAGS +=  -Wl,-U,_enif_alloc \
 				-Wl,-U,_enif_alloc_resource \
 				-Wl,-U,_enif_free \
@@ -29,8 +30,15 @@ ifeq ($(UNAME_SYS), Darwin)
 				-Wl,-U,_enif_priv_data \
 				-Wl,-U,_enif_self
 else ifeq ($(UNAME_SYS), Linux)
-	CXXFLAGS += -g -Wextra -Werror -Wno-missing-field-initializers -fno-exceptions -fno-rtti -D_USE_PRAGMA_WEAK -DUSE_CUSTOM_ALLOCATOR -DCHECK_CALLER_PROCESS -isystem $(BASEDIR)/_build
+	CXXFLAGS += -D_USE_PRAGMA_WEAK
 	LDFLAGS += -Wl,--exclude-libs=ALL
 endif
 
-LDFLAGS += -L$(BASEDIR)/_build/zlib2 -lz2 -lstdc++
+CXXFLAGS += -g -Wextra -Werror -Wno-missing-field-initializers -fno-exceptions -fno-rtti \
+ 			-DUSE_CUSTOM_ALLOCATOR \
+ 			-DCHECK_CALLER_PROCESS \
+ 			-isystem $(BASEDIR)/_build
+
+LDFLAGS +=  -L$(BASEDIR)/_build/zlib2 \
+			-lz2 \
+			-lstdc++
