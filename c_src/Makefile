@@ -37,6 +37,7 @@ endif
 CXXFLAGS += -g -Wextra -Werror -Wno-missing-field-initializers -fno-exceptions -fno-rtti \
  			-DUSE_CUSTOM_ALLOCATOR \
  			-DCHECK_CALLER_PROCESS \
+ 			-DNDEBUG \
  			-isystem $(BASEDIR)/_build
 
 LDFLAGS +=  -L$(BASEDIR)/_build/zlib2 \

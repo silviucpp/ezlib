@@ -10,7 +10,7 @@ if [ -d "$DEPS_LOCATION/$DESTINATION" ]; then
 fi
 
 BASELINE_REPO=https://github.com/madler/zlib.git
-BASELINE_REV=50893291621658f355bc5b4d450a8d06a563053d
+BASELINE_REV=4a090adef8c773087ec8916ad3c2236ef560df27
 
 CLOUDFLARE_REPO=https://github.com/cloudflare/zlib.git
 CLOUDFLARE_REV=a80420c63532c25220a54ea0980667c02303460a
@@ -19,7 +19,7 @@ INTEL_REPO=https://github.com/jtkukunas/zlib.git
 INTEL_REV=4b9e3f0c56ce0a354bcb11f048f870f2d0fc544e
 
 ZLIBNG_REPO=https://github.com/Dead2/zlib-ng.git
-ZLIBNG_REV=515fcf5ff87957dc867c872d5af1b209384a4288
+ZLIBNG_REV=343c4c549107d31f6eeabfb4b31bec4502a2ea0e
 
 function DownloadZlib()
 {

@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <string>
+#include <memory>
 
 #define UINT64_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_uint64(env, Property))
 #define DOUBLE_METRIC(Name, Property) enif_make_tuple2(env, make_atom(env, Name), enif_make_double(env, Property))
@@ -17,6 +18,8 @@
 
 #define DEFAULT_BUFFER_CAPACITY 1024
 #define MAX_BUFFER_CAPACITY 8192
+
+#define scoped_ptr(Name, Type, New, Free) std::unique_ptr<Type, decltype(&Free)>Name (New, &Free)
 
 typedef int (*PROCESSING_FUNCTION)(z_stream* strm, int flush);
 
@@ -200,26 +203,20 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
         }
     }
     
-    z_stream* stream = create_stream();
+    scoped_ptr(stream, z_stream, create_stream(), enif_free);
     
-    if(stream == NULL)
+    if(stream.get() == NULL)
         return make_error(env, "create_stream failed");
     
     if(method == DEFLATE)
     {
-        if(deflateInit2(stream, compression_level, Z_DEFLATED, window_bits, mem_level, compression_strategy) != Z_OK)
-        {
-            enif_free(stream);
+        if(deflateInit2(stream.get(), compression_level, Z_DEFLATED, window_bits, mem_level, compression_strategy) != Z_OK)
             return make_error(env, "deflateInit failed");
-        }
     }
     else
     {
-        if(inflateInit2(stream, window_bits) != Z_OK)
-        {
-            enif_free(stream);
+        if(inflateInit2(stream.get(), window_bits) != Z_OK)
             return make_error(env, "inflateInit failed");
-        }
     }
     
     zlib_session* session = static_cast<zlib_session*>(enif_alloc_resource(data->resZlibSession, sizeof(zlib_session)));
@@ -227,11 +224,10 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     if(session == NULL)
     {
         if(method == DEFLATE)
-            deflateEnd(stream);
+            deflateEnd(stream.get());
         else
-            inflateEnd(stream);
+            inflateEnd(stream.get());
    
-        enif_free(stream);
         return make_error(env, "enif_alloc_resource failed");
     }
     
@@ -239,7 +235,7 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     
     session->buffer = new ByteBuffer(DEFAULT_BUFFER_CAPACITY);
     session->method = method;
-    session->stream = stream;
+    session->stream = stream.release();
     session->processing_function = (method == DEFLATE ? deflate : inflate);
     session->use_iolist = use_iolist;
 #if defined CHECK_CALLER_PROCESS
