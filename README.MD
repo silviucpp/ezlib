@@ -4,7 +4,7 @@
 
 ### Change log:
 
--v2.3 (not released yet)
+- v2.3 (not released yet)
     - Update zlib forks versions (baseline = v1.2.10, zlibng = last master)
     - Small code cleanup in releasing memory
 
