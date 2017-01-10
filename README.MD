@@ -4,13 +4,14 @@
 
 ### Change log:
 
-- v2.3 (not released yet)
+- v2.3
     - Update zlib forks versions (baseline = v1.2.10, zlibng = last master)
     - Small code cleanup
     - Add proper validations for compression options
     - Do not throw exceptions in case of bad arguments, return `{error, Reason}` instead
     - Change the return value of `ezlib:metrics/1` to return a `proplist`
     - Add unit testing
+    - Make `zlibng` default flavour
 
 - v2.2
     - Add `rebar3` support
