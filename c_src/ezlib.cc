@@ -166,20 +166,32 @@ ERL_NIF_TERM parse_options(ErlNifEnv* env, ERL_NIF_TERM options, zlib_options* o
         {
             if(!enif_get_int(env, value, &out->compression_level))
                 return make_bad_options(env, head);
+
+            if(out->compression_level < Z_DEFAULT_COMPRESSION || out->compression_level > Z_BEST_COMPRESSION)
+                return make_bad_options(env, head);
         }
         else if(enif_is_identical(key, ATOMS.atomWindowBits))
         {
             if(!enif_get_int(env, value, &out->window_bits))
+                return make_bad_options(env, head);
+
+            if(out->window_bits < 8 || out->window_bits > 15)
                 return make_bad_options(env, head);
         }
         else if(enif_is_identical(key, ATOMS.atomMemLevel))
         {
             if(!enif_get_int(env, value, &out->mem_level))
                 return make_bad_options(env, head);
+
+            if(out->mem_level < 1 || out->mem_level > 9)
+                return make_bad_options(env, head);
         }
         else if(enif_is_identical(key, ATOMS.atomCompStrategy))
         {
             if(!enif_get_int(env, value, &out->compression_strategy))
+                return make_bad_options(env, head);
+
+            if(out->compression_strategy < Z_DEFAULT_STRATEGY || out->compression_strategy > Z_FIXED)
                 return make_bad_options(env, head);
         }
         else if(enif_is_identical(key, ATOMS.atomUseIoList))
