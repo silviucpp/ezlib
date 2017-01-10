@@ -35,10 +35,11 @@ else ifeq ($(UNAME_SYS), Linux)
 endif
 
 CXXFLAGS += -g -Wextra -Werror -Wno-missing-field-initializers -fno-exceptions -fno-rtti \
+ 			-isystem $(BASEDIR)/_build \
  			-DUSE_CUSTOM_ALLOCATOR \
  			-DCHECK_CALLER_PROCESS \
  			-DNDEBUG \
- 			-isystem $(BASEDIR)/_build
+            -std=c++11
 
 LDFLAGS +=  -L$(BASEDIR)/_build/zlib2 \
 			-lz2 \
