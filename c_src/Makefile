@@ -24,6 +24,7 @@ ifeq ($(UNAME_SYS), Darwin)
 				-Wl,-U,_enif_make_resource \
 				-Wl,-U,_enif_make_string_len \
 				-Wl,-U,_enif_make_tuple \
+				-Wl,-U,_enif_make_list \
 				-Wl,-U,_enif_make_ulong \
 				-Wl,-U,_enif_open_resource_type \
 				-Wl,-U,_enif_release_resource \

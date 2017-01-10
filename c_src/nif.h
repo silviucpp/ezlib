@@ -24,6 +24,7 @@
     #pragma weak enif_make_resource
     #pragma weak enif_make_string_len
     #pragma weak enif_make_tuple
+    #pragma weak enif_make_list
     #pragma weak enif_make_ulong
     #pragma weak enif_open_resource_type
     #pragma weak enif_release_resource
