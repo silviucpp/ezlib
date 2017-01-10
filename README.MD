@@ -9,6 +9,7 @@
     - Small code cleanup
     - Add proper validations for compression options
     - Do not throw exceptions in case of bad arguments, return `{error, Reason}` instead
+    - Change the return value of `ezlib:metrics/1` to return a `proplist`
 
 - v2.2
     - Add `rebar3` support
@@ -89,9 +90,9 @@ In addition to this memory ezlib allocates a 1 KB buffer used to avoid reallocat
 In order to see the statistics regarding compression ratio you can use `ezlib:metrics/1`. Output looks like:
 
 ```erlang
-{ok,{{total_in,192},
-     {total_out,158},
-     {ratio,17.708333333333336}}}
+ {ok,[{bytes_in,42227900},
+     {bytes_out,29096830},
+     {compression_ratio,31.09572107540276}]}
 ```     
 
 ### Benchmarks (using the benchmark.erl from testing folder)

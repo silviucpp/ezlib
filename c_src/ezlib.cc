@@ -348,9 +348,9 @@ ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
             ratio = (1.0f - (static_cast<double>(session->stream->total_in)/static_cast<double>(session->stream->total_out)))*100;
     }
     
-    ERL_NIF_TERM stats = enif_make_tuple(env, 3, UINT64_METRIC(ATOMS.atomBytesIn, session->stream->total_in),
-                                                 UINT64_METRIC(ATOMS.atomBytesOut, session->stream->total_out),
-                                                 DOUBLE_METRIC(ATOMS.atomCompressionRatio, ratio));
+    ERL_NIF_TERM stats = enif_make_list(env, 3, UINT64_METRIC(ATOMS.atomBytesIn, session->stream->total_in),
+                                                UINT64_METRIC(ATOMS.atomBytesOut, session->stream->total_out),
+                                                DOUBLE_METRIC(ATOMS.atomCompressionRatio, ratio));
     
     return enif_make_tuple2(env, ATOMS.atomOk, stats);
 }
