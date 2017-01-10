@@ -49,7 +49,6 @@ struct zlib_session
     z_stream*  stream;
     unsigned char method;
     PROCESSING_FUNCTION processing_function;
-    bool use_iolist;
 #if defined CHECK_CALLER_PROCESS
     ERL_NIF_TERM owner_pid;
 #endif
@@ -61,14 +60,12 @@ struct zlib_options
         compression_level(Z_DEFAULT_COMPRESSION),
         window_bits(15),
         mem_level(8),
-        compression_strategy(Z_DEFAULT_STRATEGY),
-        use_iolist(false) {}
+        compression_strategy(Z_DEFAULT_STRATEGY) {}
 
     int compression_level;
     int window_bits;
     int mem_level;
     int compression_strategy;
-    bool use_iolist;
 };
 
 z_stream* create_stream()
@@ -194,11 +191,6 @@ ERL_NIF_TERM parse_options(ErlNifEnv* env, ERL_NIF_TERM options, zlib_options* o
             if(out->compression_strategy < Z_DEFAULT_STRATEGY || out->compression_strategy > Z_FIXED)
                 return make_bad_options(env, head);
         }
-        else if(enif_is_identical(key, ATOMS.atomUseIoList))
-        {
-            if(!get_boolean(value, &out->use_iolist))
-                return make_bad_options(env, head);
-        }
         else
         {
             return make_bad_options(env, head);
@@ -265,7 +257,6 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     session->method = method;
     session->stream = stream.release();
     session->processing_function = (method == DEFLATE ? deflate : inflate);
-    session->use_iolist = opt.use_iolist;
 #if defined CHECK_CALLER_PROCESS
     ErlNifPid current_pid;
     enif_self(env, &current_pid);
@@ -300,7 +291,11 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
         return make_error(env, kErrorBadOwner);
 #endif
     
-    if(!process_buffer(session, in_buffer.data, in_buffer.size))
+    bool result = process_buffer(session, in_buffer.data, in_buffer.size);
+
+    consume_timeslice(env, in_buffer);
+
+    if(!result)
     {
         std::string error("process_buffer failed: ");
         
@@ -312,19 +307,14 @@ ERL_NIF_TERM nif_zlib_process_buffer(ErlNifEnv* env, int argc, const ERL_NIF_TER
 
     size_t length = session->buffer->Length();
     
-    ERL_NIF_TERM return_term;
-    
-    if(session->use_iolist)
-        return_term = enif_make_string_len(env, session->buffer->Data(), length, ERL_NIF_LATIN1);
-    else
-        return_term = make_binary(env, session->buffer->Data(), length);
+    ERL_NIF_TERM return_term = make_binary(env, session->buffer->Data(), length);
     
     session->buffer->Consume(length);
     
     if(session->buffer->Capacity() > MAX_BUFFER_CAPACITY)
         session->buffer->Resize(DEFAULT_BUFFER_CAPACITY);
     
-    return return_term;
+    return make_ok_result(env, return_term);
 }
 
 ERL_NIF_TERM nif_get_stats(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])

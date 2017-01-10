@@ -31,5 +31,4 @@
     {compression_level, compression_level()} |
     {window_bits, non_neg_integer()} |
     {memory_level, non_neg_integer()} |
-    {compression_strategy, compression_strategy()} |
-    {use_iolist, boolean()}.
+    {compression_strategy, compression_strategy()}.

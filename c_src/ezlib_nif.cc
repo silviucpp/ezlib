@@ -18,7 +18,6 @@ const char kAtomCompressionLevel[] = "compression_level";
 const char kAtomWindowBits[] = "window_bits";
 const char kAtomMemLevel[] = "memory_level";
 const char kAtomCompStrategy[] = "compression_strategy";
-const char kAtomUseIoList[] = "use_iolist";
 
 atoms ATOMS;
 
@@ -47,7 +46,6 @@ int on_nif_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
     ATOMS.atomWindowBits = make_atom(env, kAtomWindowBits);
     ATOMS.atomMemLevel = make_atom(env, kAtomMemLevel);
     ATOMS.atomCompStrategy = make_atom(env, kAtomCompStrategy);
-    ATOMS.atomUseIoList = make_atom(env, kAtomUseIoList);
 
     ezlib_data* data = static_cast<ezlib_data*>(enif_alloc(sizeof(ezlib_data)));
     open_resources(env, data);

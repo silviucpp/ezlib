@@ -4,6 +4,11 @@
 
 ### Change log:
 
+- v2.4
+
+    - Remove the support for `use_iolist`. All output is returned as `binary()` now.
+    - Implemented processing in chunks to make sure that the library is not blocking the VM schedulers. Also gives the runtime system a hint about how much CPU time the current NIF call has consumed using [enif_consume_timeslice][8]
+
 - v2.3
     - Update zlib forks versions (baseline = v1.2.10, zlibng = last master)
     - Small code cleanup
@@ -51,7 +56,6 @@ achieved. You can disable this by removing from build options in `c_src/Makefile
 
 `ezlib:new` accepts a second parameter where you can specify the following options:
 
-- `use_iolist` : Returns the output as string not as binary (default).
 - `compression_level` : Compression level 0 - 9 default 6. 0 no compression, 9 max compression
 - `window_bits` : The windowBits parameter is the base two logarithm of the window size (the size of the history buffer). It should be in the range 8..15 
 - `memory_level`: Specifies how much memory should be allocated for the internal compression state. Values between 1 to 9 default is 8
@@ -130,3 +134,4 @@ Other usefull resources regarding the optimisations did by Intel, Cloudflare and
 [5]:https://www.snellman.net/blog/archive/2014-08-04-comparison-of-intel-and-cloudflare-zlib-patches.html
 [6]:http://www.snellman.net/blog/archive/2015-06-05-updated-zlib-benchmarks/
 [7]:http://www.zlib.net/zlib_faq.html#faq21
+[8]:http://erlang.org/doc/man/erl_nif.html#enif_consume_timeslice

@@ -24,7 +24,6 @@ struct atoms
     ERL_NIF_TERM atomWindowBits;
     ERL_NIF_TERM atomMemLevel;
     ERL_NIF_TERM atomCompStrategy;
-    ERL_NIF_TERM atomUseIoList;
 };
 
 struct ezlib_data

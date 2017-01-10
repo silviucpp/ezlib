@@ -15,6 +15,7 @@ groups() -> [
         test_compression_decompression_binary,
         test_compression_decompression_string,
         test_compression_decompression_iolist,
+        test_compression_decompression_big_chunk,
         test_bad_owner_process,
         test_compression_ratio,
         test_bad_settings
@@ -49,8 +50,8 @@ test_compression_decompression_string(_Config) ->
 
     String = "this is a string compressed with zlib nif library",
 
-    {ok, DeflateRef} = ezlib:new(?Z_DEFLATE, [{use_iolist, true}]),
-    {ok, InflateRef} = ezlib:new(?Z_INFLATE, [{use_iolist, true}]),
+    {ok, DeflateRef} = ezlib:new(?Z_DEFLATE),
+    {ok, InflateRef} = ezlib:new(?Z_INFLATE),
 
     CompressedBin = ezlib:process(DeflateRef, String),
     DecompressedBin = ezlib:process(InflateRef, CompressedBin),
@@ -58,8 +59,8 @@ test_compression_decompression_string(_Config) ->
     CompressedBin2 = ezlib:process(DeflateRef, String),
     DecompressedBin2 = ezlib:process(InflateRef, CompressedBin2),
 
-    String = DecompressedBin,
-    String = DecompressedBin2,
+    String = binary_to_list(DecompressedBin),
+    String = binary_to_list(DecompressedBin2),
     true.
 
 test_compression_decompression_iolist(_Config) ->
@@ -67,8 +68,8 @@ test_compression_decompression_iolist(_Config) ->
     IoList = [[60,63,120,109,108,32,118,101, [" xml:lang='","en","'"],62]],
     String = lists:flatten(IoList),
 
-    {ok, DeflateRef} = ezlib:new(?Z_DEFLATE, [{use_iolist, true}]),
-    {ok, InflateRef} = ezlib:new(?Z_INFLATE, [{use_iolist, true}]),
+    {ok, DeflateRef} = ezlib:new(?Z_DEFLATE),
+    {ok, InflateRef} = ezlib:new(?Z_INFLATE),
 
     CompressedBin = ezlib:process(DeflateRef, IoList),
     DecompressedBin = ezlib:process(InflateRef, CompressedBin),
@@ -76,9 +77,26 @@ test_compression_decompression_iolist(_Config) ->
     CompressedBin2 = ezlib:process(DeflateRef, IoList),
     DecompressedBin2 = ezlib:process(InflateRef, CompressedBin2),
 
-    String = DecompressedBin,
-    String = DecompressedBin2,
+    String = binary_to_list(DecompressedBin),
+    String = binary_to_list(DecompressedBin2),
     ok.
+
+test_compression_decompression_big_chunk(_Config) ->
+
+    StringBin = <<0:85536/little-signed-integer-unit:8>>,
+
+    {ok, DeflateRef} = ezlib:new(?Z_DEFLATE),
+    {ok, InflateRef} = ezlib:new(?Z_INFLATE),
+
+    CompressedBin = ezlib:process(DeflateRef, StringBin),
+    DecompressedBin = ezlib:process(InflateRef, CompressedBin),
+
+    CompressedBin2 = ezlib:process(DeflateRef, StringBin),
+    DecompressedBin2 = ezlib:process(InflateRef, CompressedBin2),
+
+    DecompressedBin = StringBin,
+    DecompressedBin2 = StringBin,
+    true.
 
 test_bad_owner_process(_Config) ->
     ParentProcess = self(),

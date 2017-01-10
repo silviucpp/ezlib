@@ -30,6 +30,7 @@
     #pragma weak enif_release_resource
     #pragma weak enif_priv_data
     #pragma weak enif_self
+    #pragma weak enif_consume_timeslice
 #endif
 
 #endif

@@ -29,6 +29,7 @@ ifeq ($(UNAME_SYS), Darwin)
 				-Wl,-U,_enif_open_resource_type \
 				-Wl,-U,_enif_release_resource \
 				-Wl,-U,_enif_priv_data \
+				-Wl,-U,_enif_consume_timeslice \
 				-Wl,-U,_enif_self
 else ifeq ($(UNAME_SYS), Linux)
 	CXXFLAGS += -D_USE_PRAGMA_WEAK
