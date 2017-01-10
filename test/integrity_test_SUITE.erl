@@ -16,7 +16,8 @@ groups() -> [
         test_compression_decompression_string,
         test_compression_decompression_iolist,
         test_bad_owner_process,
-        test_compression_ratio
+        test_compression_ratio,
+        test_bad_settings
     ]}
 ].
 
@@ -117,3 +118,12 @@ ezlib_process(Ref, Nr) ->
            </iq>">>),
     ezlib_process(Ref, Nr - 1).
 
+test_bad_settings(_Config) ->
+    Options = [
+        {compression_level, 20},
+        {window_bits, 10},
+        {memory_level, 1}
+    ],
+
+    {error,{options,{compression_level,20}}} = ezlib:new(?Z_DEFLATE, Options),
+    true.

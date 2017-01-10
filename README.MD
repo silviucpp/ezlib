@@ -10,6 +10,7 @@
     - Add proper validations for compression options
     - Do not throw exceptions in case of bad arguments, return `{error, Reason}` instead
     - Change the return value of `ezlib:metrics/1` to return a `proplist`
+    - Add unit testing
 
 - v2.2
     - Add `rebar3` support
@@ -95,7 +96,7 @@ In order to see the statistics regarding compression ratio you can use `ezlib:me
      {compression_ratio,31.09572107540276}]}
 ```     
 
-### Benchmarks (using the benchmark.erl from testing folder)
+### Benchmarks (using the benchmark.erl from test folder)
 
 You can specify a file path, how many times to deflate it line by line and compression level, window size and memory level.
 
