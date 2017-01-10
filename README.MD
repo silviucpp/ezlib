@@ -100,9 +100,9 @@ In order to see the statistics regarding compression ratio you can use `ezlib:me
 
 You can specify a file path, how many times to deflate it line by line and compression level, window size and memory level.
 
-`benchmark:run(ezlib,"file path here", 10000, 1, 8, 2).` or `benchmark:run(erlang,"file path here", 10000, 1, 8, 2).`
+`benchmark:run(ezlib,"file path here", 1, 6, 10, 1).` or `benchmark:run(erlang,"file path here", 1, 6, 10, 1).`
 
-Benchmark results compressing a text file line by line 200 times on a Ubuntu 14.04 LTS ( `benchmark:run(ezlib,"file path here", 200, 6, 10, 1).` ):
+Benchmark results compressing a text file line by line 20 times on a Ubuntu 14.04 LTS ( `benchmark:run(ezlib,"file path here", 20, 6, 10, 1).` ):
 
 Zlib settings:
 
@@ -112,13 +112,13 @@ Zlib settings:
 
 Results:
 
-| zlib library       | Run1 (ms) | Run2 (ms) | Run3 (ms) | Compression Ratio (%) |
-|:------------------:|:---------:|:---------:|:---------:|:---------------------:|
-| erlang zlib driver | 20128.801 | 20038.368 | 20000.725 | N/A                   |
-| ezlib baseline     | 17588.222 | 17569.594 | 17610.2   | 67.92                 |
-| ezlib cloudflare   | 15077.336 | 15074.345 | 15078.263 | 67.30                 |
-| ezlib intel        | 14392.551 | 14339.686 | 14364.061 | 71.15                 |
-| ezlib zlibng       | 13868.952 | 13855.77  | 13847.749 | 71.09                 |
+| zlib library           | Run1 (ms) | Run2 (ms) | Run3 (ms) | Compression Ratio (%) |
+|:----------------------:|:---------:|:---------:|:---------:|:---------------------:|
+| erlang 19.2 zlib       | 5263.057  | 5310.38   | 5364.473  | N/A                   |
+| ezlib baseline v1.2.10 | 4262.78   | 4272.341  | 4274.306  | 73.10                 |
+| ezlib cloudflare       | 3679.534  | 3691.137  | 3695.24	 | 72.61                 |
+| ezlib intel            | 3541.116	 | 3546.805	 | 3578.607	 | 75.89                 |
+| ezlib zlibng           | 3466.844  | 3503.928  | 3478.131  | 75.86                 |
 
 Other usefull resources regarding the optimisations did by Intel, Cloudflare and ZlibNg into their forks and other benchmakrs as well can be found [here][5] and [here][6].
 
