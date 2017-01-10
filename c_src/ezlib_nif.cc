@@ -7,6 +7,13 @@ const char kAtomOk[] = "ok";
 const char kAtomError[] = "error";
 const char kAtomTrue[] = "true";
 const char kAtomFalse[] = "false";
+const char kAtomBadArg[] = "badarg";
+const char kAtomOptions[] = "options";
+
+const char kAtomBytesIn[] = "bytes_in";
+const char kAtomBytesOut[] = "bytes_out";
+const char kAtomCompressionRatio[] = "compression_ratio" ;
+
 const char kAtomCompressionLevel[] = "compression_level";
 const char kAtomWindowBits[] = "window_bits";
 const char kAtomMemLevel[] = "memory_level";
@@ -29,6 +36,12 @@ int on_nif_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
     ATOMS.atomError = make_atom(env, kAtomError);
     ATOMS.atomTrue = make_atom(env, kAtomTrue);
     ATOMS.atomFalse = make_atom(env, kAtomFalse);
+    ATOMS.atomOptions = make_atom(env, kAtomOptions);
+    ATOMS.atomBadArg = make_atom(env, kAtomBadArg);
+
+    ATOMS.atomBytesIn = make_atom(env, kAtomBytesIn);
+    ATOMS.atomBytesOut = make_atom(env, kAtomBytesOut);
+    ATOMS.atomCompressionRatio = make_atom(env, kAtomCompressionRatio);
     
     ATOMS.atomCompressionLevel = make_atom(env, kAtomCompressionLevel);
     ATOMS.atomWindowBits = make_atom(env, kAtomWindowBits);

@@ -9,7 +9,15 @@ struct atoms
     ERL_NIF_TERM atomError;
     ERL_NIF_TERM atomTrue;
     ERL_NIF_TERM atomFalse;
-    
+    ERL_NIF_TERM atomBadArg;
+    ERL_NIF_TERM atomOptions;
+
+    //stats
+
+    ERL_NIF_TERM atomBytesIn;
+    ERL_NIF_TERM atomBytesOut;
+    ERL_NIF_TERM atomCompressionRatio;
+
     //settings
     
     ERL_NIF_TERM atomCompressionLevel;
