@@ -85,7 +85,7 @@ Options = [
 zlib memory footprint which can be calculated as:
 
 - deflate memory usage in bytes = (1 << (`window_bits`+2)) + (1 << (`memory_level`+9)) 
-- inflate memory usage in bytes = (1 << `window_bits`) + 1440*2*sizeof(int) 
+- inflate memory usage in bytes = (1 << `window_bits`) + 1440\*2\*sizeof(int) 
 
 The default values for `window_bits` and `memory_level` are 15 and 8 so for this values the default required memory for deflate is 256 KB and for inflate is 44 KB.
 
