@@ -103,11 +103,11 @@ In order to see the statistics regarding compression ratio you can use `ezlib:me
 
 ### Benchmarks (using the benchmark.erl from test folder)
 
-You can specify a file path, how many times to deflate it line by line and compression level, window size and memory level.
+You can specify a file path, concurrency level, how many times to deflate it line by line and compression level, window size and memory level.
 
-`benchmark:run(ezlib,"file path here", 1, 6, 10, 1).` or `benchmark:run(erlang,"file path here", 1, 6, 10, 1).`
+`benchmark:run(ezlib,"file path here", 1, 1, 6, 10, 1).` or `benchmark:run(erlang,"file path here", 1, 1, 6, 10, 1).`
 
-Benchmark results compressing a text file line by line 20 times on a Ubuntu 14.04 LTS ( `benchmark:run(ezlib,"file path here", 20, 6, 10, 1).` ):
+Benchmark results compressing a text file line by line 20 times on a Ubuntu 14.04 LTS ( `benchmark:run(ezlib,"file path here", 1, 20, 6, 10, 1).` ):
 
 Zlib settings:
 
@@ -115,7 +115,7 @@ Zlib settings:
 - `Window Size`: 10
 - `Memory Level` : 1
 
-Results:
+Results: (concurrency level 1)
 
 | zlib library           | Run1 (ms) | Run2 (ms) | Run3 (ms) | Compression Ratio (%) |
 |:----------------------:|:---------:|:---------:|:---------:|:---------------------:|
