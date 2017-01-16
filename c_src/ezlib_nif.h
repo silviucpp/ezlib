@@ -1,7 +1,7 @@
 #ifndef EZLIB_C_SRC_EZLIB_NIF_H_
 #define EZLIB_C_SRC_EZLIB_NIF_H_
 
-#include "nif.h"
+#include "erl_nif.h"
 
 struct atoms
 {
