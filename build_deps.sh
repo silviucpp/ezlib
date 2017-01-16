@@ -10,7 +10,7 @@ if [ -f "$DEPS_LOCATION/$DESTINATION/libz2.a" ]; then
 fi
 
 BASELINE_REPO=https://github.com/madler/zlib.git
-BASELINE_REV=4a090adef8c773087ec8916ad3c2236ef560df27
+BASELINE_REV=cacf7f1d4e3d44d871b605da3b647f07d718623f
 
 CLOUDFLARE_REPO=https://github.com/cloudflare/zlib.git
 CLOUDFLARE_REV=a80420c63532c25220a54ea0980667c02303460a
