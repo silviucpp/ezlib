@@ -4,6 +4,12 @@
 
 ### Change log:
 
+- v2.5 
+
+    - Update zlib forks versions (baseline = v1.2.11)
+    - Improved the benchmark script
+    - Fix the script for getting the zlib dependencies.
+
 - v2.4
 
     - Remove the support for `use_iolist`. All output is returned as `binary()` now.
