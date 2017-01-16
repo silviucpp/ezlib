@@ -4,7 +4,7 @@ DEPS_LOCATION=_build
 DESTINATION=zlib2
 ZLIB_FORK=$1
 
-if [ -d "$DEPS_LOCATION/$DESTINATION" ]; then
+if [ -f "$DEPS_LOCATION/$DESTINATION/libz2.a" ]; then
     echo "Zlib fork already exist. delete $DEPS_LOCATION/$DESTINATION for a fresh checkout."
     exit 0
 fi
@@ -20,6 +20,16 @@ INTEL_REV=4b9e3f0c56ce0a354bcb11f048f870f2d0fc544e
 
 ZLIBNG_REPO=https://github.com/Dead2/zlib-ng.git
 ZLIBNG_REV=343c4c549107d31f6eeabfb4b31bec4502a2ea0e
+
+function fail_check
+{
+    "$@"
+    local status=$?
+    if [ $status -ne 0 ]; then
+        echo "error with $1" >&2
+        exit 1
+    fi
+}
 
 function DownloadZlib()
 {
@@ -55,9 +65,13 @@ function DownloadZlib()
 
 	mkdir -p $DEPS_LOCATION
 	pushd $DEPS_LOCATION
-	git clone $REPO $DESTINATION
+
+	if [ ! -d "$DESTINATION" ]; then
+	    fail_check git clone $REPO $DESTINATION
+	fi
+
 	pushd $DESTINATION
-	git checkout $REV
+	fail_check git checkout $REV
 	popd
 	popd
 }
@@ -82,10 +96,10 @@ function BuildZlib()
 	echo "CFLAGS=$CPP_FLAGS"
     export CFLAGS="$CPP_FLAGS"
 
-	./configure --static
-	make
+	fail_check ./configure --static
+	fail_check make
 	rm -f libz2.a
-	cp libz.a libz2.a
+	fail_check cp libz.a libz2.a
 
 	popd
 	popd
