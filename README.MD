@@ -4,6 +4,10 @@
 
 ### Change log:
 
+- v2.6 
+
+    - Use intel zlib fork as default
+
 - v2.5 
 
     - Update zlib forks versions (baseline = v1.2.11)

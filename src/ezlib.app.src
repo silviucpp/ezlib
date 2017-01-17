@@ -1,6 +1,6 @@
 {application, ezlib, [
     {description, "Erlang zlib NIF library optimized for streaming"},
-    {vsn, "2.3"},
+    {vsn, "2.6"},
     {registered, []},
     {applications, [kernel, stdlib]},
     {mod, {ezlib_app, []}},
