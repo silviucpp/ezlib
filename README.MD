@@ -6,7 +6,7 @@
 
 - v2.6 
 
-    - Use intel zlib fork as default
+    - Use baseline zlib fork as default
 
 - v2.5 
 
