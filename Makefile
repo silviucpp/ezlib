@@ -1,4 +1,11 @@
-ZLIB_FORK=baseline
+#baseline - original zlib
+#cloudflare - cloudflare fork
+#intel - intel fork
+#zlibng - zlibng fork
+
+ifndef ZLIB_FORK
+    ZLIB_FORK=baseline
+endif
 
 compile:
 	@./build_deps.sh $(ZLIB_FORK)

@@ -11,6 +11,13 @@
 - [intel][3] - will statically link with the intel zlib fork
 - [zlibng][4] - will statically link with zlibng fork
 
+By default the baseline is used. In order to change the zlib fork you can use the `ZLIB_FORK` env variable. For example
+to use `zlibng` for you can use: 
+
+```erlang
+ZLIB_FORK=zlibng rebar compile
+``` 
+
 Based on [zlib FAQ][7] thread safety of the library can be achieved by meeting several conditions. The most important being
 the fact that you should only operate on any given zlib stream from a single thread at a time. In erlang this means that
 you need to operate on a ezlib session from the same process that created it. In case you access the same stream from multiple
