@@ -251,11 +251,10 @@ ERL_NIF_TERM nif_zlib_new_session(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     session->method = method;
     session->stream = stream.release();
     session->processing_function = (method == DEFLATE ? deflate : inflate);
-#if defined CHECK_CALLER_PROCESS
+
     ErlNifPid current_pid;
     enif_self(env, &current_pid);
     session->owner_pid = enif_make_pid(env, &current_pid);
-#endif
 
     ERL_NIF_TERM term = enif_make_resource(env, session);
     enif_release_resource(session);
