@@ -30,7 +30,7 @@ void open_resources(ErlNifEnv* env, ezlib_data* data)
 int on_nif_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
 {
     UNUSED(load_info);
-    
+
     ATOMS.atomOk = make_atom(env, kAtomOk);
     ATOMS.atomError = make_atom(env, kAtomError);
     ATOMS.atomTrue = make_atom(env, kAtomTrue);
@@ -41,7 +41,7 @@ int on_nif_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
     ATOMS.atomBytesIn = make_atom(env, kAtomBytesIn);
     ATOMS.atomBytesOut = make_atom(env, kAtomBytesOut);
     ATOMS.atomCompressionRatio = make_atom(env, kAtomCompressionRatio);
-    
+
     ATOMS.atomCompressionLevel = make_atom(env, kAtomCompressionLevel);
     ATOMS.atomWindowBits = make_atom(env, kAtomWindowBits);
     ATOMS.atomMemLevel = make_atom(env, kAtomMemLevel);
@@ -49,7 +49,7 @@ int on_nif_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
 
     ezlib_data* data = static_cast<ezlib_data*>(enif_alloc(sizeof(ezlib_data)));
     open_resources(env, data);
-    
+
     *priv_data = data;
     return 0;
 }
@@ -57,7 +57,7 @@ int on_nif_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
 void on_nif_unload(ErlNifEnv* env, void* priv_data)
 {
     UNUSED(env);
-    
+
     ezlib_data* data = static_cast<ezlib_data*>(priv_data);
     enif_free(data);
 }
@@ -66,16 +66,16 @@ int on_nif_upgrade(ErlNifEnv* env, void** priv, void** old_priv, ERL_NIF_TERM in
 {
     UNUSED(old_priv);
     UNUSED(info);
-    
+
     ezlib_data* data = static_cast<ezlib_data*>(enif_alloc(sizeof(ezlib_data)));
     open_resources(env, data);
-    
+
     *priv = data;
     return 0;
 }
 
 static ErlNifFunc nif_funcs[] =
-{    
+{
     {"new_session", 2, nif_zlib_new_session},
     {"new_session", 1, nif_zlib_new_session},
     {"process_buffer", 2, nif_zlib_process_buffer},
