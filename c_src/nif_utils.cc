@@ -17,17 +17,17 @@ ERL_NIF_TERM make_atom(ErlNifEnv* env, const char* name)
     return enif_make_atom(env, name);
 }
 
-ERL_NIF_TERM make_binary(ErlNifEnv* env, const char* buff, size_t length)
+ERL_NIF_TERM make_binary(ErlNifEnv* env, const uint8_t* buff, size_t length)
 {
     ERL_NIF_TERM term;
-    unsigned char *destination_buffer = enif_make_new_binary(env, length, &term);
+    uint8_t *destination_buffer = enif_make_new_binary(env, length, &term);
     memcpy(destination_buffer, buff, length);
     return term;
 }
 
 ERL_NIF_TERM make_error(ErlNifEnv* env, const char* error)
 {
-    return enif_make_tuple2(env, ATOMS.atomError, make_binary(env, error, strlen(error)));
+    return enif_make_tuple2(env, ATOMS.atomError, make_binary(env, reinterpret_cast<const uint8_t*>(error), strlen(error)));
 }
 
 ERL_NIF_TERM make_error(ErlNifEnv* env, ERL_NIF_TERM term)
