@@ -3,6 +3,7 @@
 - v2.7
 
     - Improved internal buffer
+    - use `ZLIB_FORK` env variable to change the default zlib fork
 
 - v2.6 
 
