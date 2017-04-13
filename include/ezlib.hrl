@@ -27,8 +27,7 @@
 -type compression_level()     :: ?Z_NO_COMPRESSION | ?Z_BEST_SPEED | ?Z_BEST_COMPRESSION | ?Z_DEFAULT_COMPRESSION.
 -type compression_strategy()  :: ?Z_FILTERED | ?Z_HUFFMAN_ONLY | ?Z_RLE | ?Z_FIXED | ?Z_DEFAULT_STRATEGY.
 
--type ezlib_option()::
-    {compression_level, compression_level()} |
-    {window_bits, non_neg_integer()} |
-    {memory_level, non_neg_integer()} |
-    {compression_strategy, compression_strategy()}.
+-type ezlib_option() :: {compression_level, compression_level()} |
+                        {window_bits, non_neg_integer()} |
+                        {memory_level, non_neg_integer()} |
+                        {compression_strategy, compression_strategy()}.
