@@ -13,13 +13,13 @@ BASELINE_REPO=https://github.com/madler/zlib.git
 BASELINE_REV=50893291621658f355bc5b4d450a8d06a563053d
 
 CLOUDFLARE_REPO=https://github.com/cloudflare/zlib.git
-CLOUDFLARE_REV=a80420c63532c25220a54ea0980667c02303460a
+CLOUDFLARE_REV=836eb111a5c5df7db3f2469a867a6f7c1b2e7bdb
 
 INTEL_REPO=https://github.com/jtkukunas/zlib.git
 INTEL_REV=4b9e3f0c56ce0a354bcb11f048f870f2d0fc544e
 
 ZLIBNG_REPO=https://github.com/Dead2/zlib-ng.git
-ZLIBNG_REV=343c4c549107d31f6eeabfb4b31bec4502a2ea0e
+ZLIBNG_REV=75e76eebeb08dccea44a1d9933699f7f9a0a97ea
 
 function fail_check
 {
