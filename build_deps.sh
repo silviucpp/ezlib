@@ -19,7 +19,7 @@ INTEL_REPO=https://github.com/jtkukunas/zlib.git
 INTEL_REV=4b9e3f0c56ce0a354bcb11f048f870f2d0fc544e
 
 ZLIBNG_REPO=https://github.com/Dead2/zlib-ng.git
-ZLIBNG_REV=75e76eebeb08dccea44a1d9933699f7f9a0a97ea
+ZLIBNG_REV=343c4c549107d31f6eeabfb4b31bec4502a2ea0e
 
 function fail_check
 {

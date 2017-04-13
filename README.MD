@@ -91,7 +91,11 @@ You can specify a file path, concurrency level, how many times to deflate it lin
 
 `benchmark:run(ezlib,"file path here", 1, 1, 6, 10, 1).` or `benchmark:run(erlang,"file path here", 1, 1, 6, 10, 1).`
 
-Benchmark results compressing a text file line by line 20 times on a Ubuntu 14.04 LTS ( `benchmark:run(ezlib,"file path here", 1, 20, 6, 10, 1).` ):
+Benchmark results compressing a text file line by line 20 times on a MacBook Pro 
+
+```erlang
+benchmark:run(ezlib, FilePath, ConcurencyLevel, 20, 6, 10, 1).
+```
 
 Zlib settings:
 
@@ -99,15 +103,15 @@ Zlib settings:
 - `Window Size`: 10
 - `Memory Level` : 1
 
-Results: (concurrency level 1)
+Results: (for different concurrency levels)
 
-| zlib library           | Run1 (ms) | Run2 (ms) | Run3 (ms) | Compression Ratio (%) |
-|:----------------------:|:---------:|:---------:|:---------:|:---------------------:|
-| erlang 19.2 zlib       | 5263.057  | 5310.38   | 5364.473  | N/A                   |
-| ezlib baseline         | 4262.78   | 4272.341  | 4274.306  | 73.10                 |
-| ezlib cloudflare       | 3679.534  | 3691.137  | 3695.24	 | 72.61                 |
-| ezlib intel            | 3541.116	 | 3546.805	 | 3578.607	 | 75.89                 |
-| ezlib zlibng           | 3466.844  | 3503.928  | 3478.131  | 75.86                 |
+| zlib library           | C1 (MB/s) | C5 (MB/s) | C10 (MB/s) | Compression Ratio (%) |
+|:----------------------:|:---------:|:---------:|:----------:|:---------------------:|
+| erlang 19.2 zlib       | 22.22     | 87.90     | 91.46      | N/A                   |
+| ezlib baseline         | 25.33     | 105.37    | 113.68     | 73.10                 |
+| ezlib cloudflare       | 28.98     | 122.36    | 133.12	  | 72.61                 |
+| ezlib intel            | 29.43	 | 120.98	 | 131.13  	  | 75.89                 |
+| ezlib zlibng           | 31.24     | 129.36    | 139.50     | 75.86                 |
 
 Other useful resources regarding the optimisations did by Intel, Cloudflare and ZlibNg into their forks and other benchmarks as well can be found [here][5] and [here][6].
 
