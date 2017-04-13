@@ -1,48 +1,22 @@
 # ezlib
 
-*An zlib NIF library for Erlang optimised for streaming. Much faster than the erlang zlib driver (with over 60%)* 
+*An zlib NIF library for Erlang optimised for streaming* 
 
-### Change log:
+### Intro
 
-- v2.6 
+`ezlib` can be used with different zlib forks like:
 
-    - Use baseline zlib fork as default
+- [baseline][1] - will statically link with the original zlib
+- [cloudflare][2] - will statically link with the cloudflare zlib fork
+- [intel][3] - will statically link with the intel zlib fork
+- [zlibng][4] - will statically link with zlibng fork
 
-- v2.5 
+Based on [zlib FAQ][7] thread safety of the library can be achieved by meeting several conditions. The most important being
+the fact that you should only operate on any given zlib stream from a single thread at a time. In erlang this means that
+you need to operate on a ezlib session from the same process that created it. In case you access the same stream from multiple
+processes you will get an error when calling `process/2`.
 
-    - Update zlib forks versions (baseline = v1.2.11)
-    - Improved the benchmark script
-    - Fix the script for getting the zlib dependencies.
-
-- v2.4
-
-    - Remove the support for `use_iolist`. All output is returned as `binary()` now.
-    - Implemented processing in chunks to make sure that the library is not blocking the VM schedulers. Also gives the runtime system a hint about how much CPU time the current NIF call has consumed using [enif_consume_timeslice][8]
-
-- v2.3
-    - Update zlib forks versions (baseline = v1.2.10, zlibng = last master)
-    - Small code cleanup
-    - Add proper validations for compression options
-    - Do not throw exceptions in case of bad arguments, return `{error, Reason}` instead
-    - Change the return value of `ezlib:metrics/1` to return a `proplist`
-    - Add unit testing
-    - Make `zlibng` default flavour
-
-- v2.2
-    - Add `rebar3` support
-
-- v2.1
-    - Add support for checking if the process that plays with the ezlib session is the same that created it. See Notes for more info
-    - Updated the forks versions and changed to use baseline as default fork
-
-- v2.0
-    - Integrated support for external zlib forks (around 69 % faster than erlang driver):
-    - [baseline][1] - will statically link with the original zlib
-    - [cloudflare][2] - will statically link with the cloudflare zlib fork
-    - [intel][3] - will statically link with the intel zlib fork
-    - [zlibng][4] - will statically link with zlibng fork
-- v1.0
-    - Initial implementation. From load testing there is around 30 % improvements that `zlib erlang driver`.
+You can access the changelog from [here][8]
 
 ### Getting starting:
 
@@ -54,13 +28,6 @@ CompressedBin = ezlib:process(DeflateRef, StringBin),
 DecompressedBin = ezlib:process(InflateRef, CompressedBin),
 DecompressedBin = StringBin
 ```
-
-### Notes
-
-Based on [zlib FAQ][7] thread safety of the library can be achieved by meeting several conditions. The most important being
-the fact that you should only operate on any given zlib stream from a single thread at a time. In erlang this means that
-you need to operate on a ezlib session from the same process that created it. The build `2.1` returns an error in case this is not
-achieved. You can disable this by removing from build options in `c_src/Makefile` the `-DCHECK_CALLER_PROCESS` directive.
 
 ### Settings
 
@@ -135,7 +102,7 @@ Results: (concurrency level 1)
 | ezlib intel            | 3541.116	 | 3546.805	 | 3578.607	 | 75.89                 |
 | ezlib zlibng           | 3466.844  | 3503.928  | 3478.131  | 75.86                 |
 
-Other usefull resources regarding the optimisations did by Intel, Cloudflare and ZlibNg into their forks and other benchmakrs as well can be found [here][5] and [here][6].
+Other useful resources regarding the optimisations did by Intel, Cloudflare and ZlibNg into their forks and other benchmarks as well can be found [here][5] and [here][6].
 
 [1]:https://github.com/madler/zlib.git
 [2]:https://github.com/cloudflare/zlib.git
@@ -144,4 +111,4 @@ Other usefull resources regarding the optimisations did by Intel, Cloudflare and
 [5]:https://www.snellman.net/blog/archive/2014-08-04-comparison-of-intel-and-cloudflare-zlib-patches.html
 [6]:http://www.snellman.net/blog/archive/2015-06-05-updated-zlib-benchmarks/
 [7]:http://www.zlib.net/zlib_faq.html#faq21
-[8]:http://erlang.org/doc/man/erl_nif.html#enif_consume_timeslice
+[8]:https://github.com/silviucpp/ezlib/blob/master/CHANGELOG.MD

@@ -33,10 +33,8 @@ ifeq ($(UNAME_SYS), darwin)
 				-Wl,-U,_enif_make_ulong
 endif
 
-CXXFLAGS += -DUSE_CUSTOM_ALLOCATOR \
-			-DCHECK_CALLER_PROCESS \
-			-DNDEBUG \
-			 -I $(BASEDIR)/_build \
+CXXFLAGS += -DNDEBUG \
+			-I $(BASEDIR)/_build \
 			-g -Wextra -Werror -Wno-missing-field-initializers -fno-exceptions -fno-rtti -std=c++11
 
 LDFLAGS +=  -L$(BASEDIR)/_build/zlib2 -lz2 -lstdc++
