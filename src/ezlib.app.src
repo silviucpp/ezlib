@@ -1,8 +1,29 @@
 {application, ezlib, [
     {description, "Erlang zlib NIF library optimized for streaming"},
-    {vsn, "2.7"},
+    {licenses, ["MIT"]},
+    {links,[{"Github","https://github.com/silviucpp/ezlib"}]},
+    {vsn, "2.8.0"},
     {registered, []},
-    {applications, [kernel, stdlib]},
+    {applications, [
+        kernel,
+        stdlib
+    ]},
     {mod, {ezlib_app, []}},
-    {env, []}
+    {env, []},
+    {files, [
+        "LICENSE*",
+        "*.MD",
+        "Makefile",
+        "build_deps.sh",
+        "rebar.config",
+        "rebar.lock",
+        "include/*.hrl",
+        "src/*.erl",
+        "src/*.src",
+        "c_src/*.h",
+        "c_src/*.cc",
+        "c_src/Makefile",
+        "c_src/nif.mk",
+        "test/*.erl"
+    ]}
 ]}.
