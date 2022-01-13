@@ -1,5 +1,8 @@
 # ezlib
 
+[![Build Status](https://travis-ci.com/silviucpp/ezlib.svg?branch=master)](https://travis-ci.com/github/silviucpp/ezlib)
+![GitHub](https://img.shields.io/github/license/silviucpp/ezlib)
+
 *An zlib NIF library for Erlang optimised for streaming* 
 
 ### Intro

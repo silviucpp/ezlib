@@ -10,16 +10,16 @@ if [ -f "$DEPS_LOCATION/$DESTINATION/libz2.a" ]; then
 fi
 
 BASELINE_REPO=https://github.com/madler/zlib.git
-BASELINE_REV=50893291621658f355bc5b4d450a8d06a563053d
+BASELINE_REV=cacf7f1d4e3d44d871b605da3b647f07d718623f
 
 CLOUDFLARE_REPO=https://github.com/cloudflare/zlib.git
-CLOUDFLARE_REV=836eb111a5c5df7db3f2469a867a6f7c1b2e7bdb
+CLOUDFLARE_REV=959b4ea305821e753385e873ec4edfaa9a5d49b7
 
 INTEL_REPO=https://github.com/jtkukunas/zlib.git
-INTEL_REV=4b9e3f0c56ce0a354bcb11f048f870f2d0fc544e
+INTEL_REV=bf29715726fe22390b59b2cbf9c935179ef49aed
 
 ZLIBNG_REPO=https://github.com/Dead2/zlib-ng.git
-ZLIBNG_REV=343c4c549107d31f6eeabfb4b31bec4502a2ea0e
+ZLIBNG_REV=62b269b4a5f4502d6dc03d73bb5b552e80066885
 
 function fail_check
 {
