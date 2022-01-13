@@ -99,7 +99,16 @@ function BuildZlib()
 	fail_check ./configure --static
 	fail_check make
 	rm -f libz2.a
-	fail_check cp libz.a libz2.a
+
+	case $ZLIB_FORK in
+        zlibng)
+            fail_check cp libz-ng.a libz2.a
+            ;;
+
+        *)
+            fail_check cp libz.a libz2.a
+            ;;
+    esac
 
 	popd
 	popd
