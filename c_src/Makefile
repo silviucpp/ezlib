@@ -35,6 +35,6 @@ endif
 
 CXXFLAGS += -DNDEBUG \
 			-I $(BASEDIR)/_build \
-			-g -Wextra -Werror -Wno-missing-field-initializers -fno-exceptions -fno-rtti -std=c++11
+			-g -Wextra -Werror -Wno-missing-field-initializers -fno-exceptions -fno-rtti -std=c++11 -Wno-ignored-qualifiers
 
 LDFLAGS +=  -L$(BASEDIR)/_build/zlib2 -lz2 -lstdc++
