@@ -2,7 +2,7 @@
     {description, "Erlang zlib NIF library optimized for streaming"},
     {licenses, ["MIT"]},
     {links,[{"Github","https://github.com/silviucpp/ezlib"}]},
-    {vsn, "2.8.0"},
+    {vsn, "2.8.1"},
     {registered, []},
     {applications, [
         kernel,

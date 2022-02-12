@@ -9,6 +9,8 @@ if [ -f "$DEPS_LOCATION/$DESTINATION/libz2.a" ]; then
     exit 0
 fi
 
+CPUS=`getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu`
+
 BASELINE_REPO=https://github.com/madler/zlib.git
 BASELINE_REV=cacf7f1d4e3d44d871b605da3b647f07d718623f
 
@@ -97,7 +99,7 @@ function BuildZlib()
     export CFLAGS="$CPP_FLAGS"
 
 	fail_check ./configure --static
-	fail_check make
+	fail_check make -j $CPUS
 	rm -f libz2.a
 
 	case $ZLIB_FORK in

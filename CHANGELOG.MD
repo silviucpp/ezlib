@@ -1,5 +1,9 @@
 ### Change log:
 
+- v2.8.1
+
+    - Improve build script
+
 - v2.8.0
 
     - Fix buffer resize issue
